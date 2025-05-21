@@ -69,6 +69,23 @@ def log_dir_operation(operation: str, directory: str = '.', success: bool = True
         logger.error(f"Directory operation: {operation} on {directory} - Failed: {error}")
 
 
+def init_app(app):
+    """
+    Initialize the logger for the Flask application.
+    
+    Args:
+        app (Flask): The Flask application to initialize the logger for.
+    """
+    if not app.debug:
+        app.logger.setLevel(logging.INFO)
+        app.logger.addHandler(console_handler)
+        app.logger.addHandler(file_handler)
+    
+    # Log when the app starts
+    logger.info(f"SheLLama API started on {app.config.get('HOST', '127.0.0.1')}:{app.config.get('PORT', 8082)}")
+
+
+
 def log_shell_command(command: str, success: bool = True, exit_code: int = 0, error: str = None):
     """
     Log a shell command execution.
