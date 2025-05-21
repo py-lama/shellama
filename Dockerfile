@@ -24,8 +24,11 @@ ENV PORT=8002
 ENV HOST=0.0.0.0
 ENV DEBUG=False
 
-# This is primarily a library, but we'll expose a port for potential API usage
+# Expose the REST API port
 EXPOSE 8002
 
-# Command to run the CLI (can be overridden)
-CMD ["python", "-m", "shellama.cli"]
+# Install Flask and Flask-CORS for the REST API
+RUN pip install --no-cache-dir flask flask-cors
+
+# Command to run the REST API server
+CMD ["python", "-m", "shellama.app", "--port", "8002", "--host", "0.0.0.0"]

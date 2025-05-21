@@ -1,14 +1,17 @@
 # SheLLama
 
-SheLLama is a Python package for shell and filesystem operations in the PyLama ecosystem. It provides a unified interface for file management, directory operations, and shell command execution, available both as a Python library and a REST API service.
+SheLLama is a dedicated REST API service for shell and filesystem operations in the PyLama ecosystem. It provides a unified interface for file management, directory operations, shell command execution, and Git integration, available both as a Python library and a standalone REST API service that communicates with the APILama gateway.
 
 ## Features
 
-- File operations (read, write, list, search)
-- Directory management
-- Shell command execution
-- Git integration for version control
-- Secure file handling with proper permissions
+- **RESTful API**: Complete REST API for all shell and filesystem operations
+- **File Operations**: Read, write, list, and search files with proper error handling
+- **Directory Management**: Create, delete, and list directories with detailed information
+- **Shell Command Execution**: Execute shell commands with output capture and error handling
+- **Git Integration**: Initialize repositories, commit changes, view status and logs
+- **Secure File Handling**: Proper permissions and security checks for all operations
+- **Cross-Origin Support**: CORS headers for integration with web applications
+- **Detailed Logging**: Comprehensive logging of all operations for debugging and auditing
 
 ## Installation
 
@@ -59,11 +62,20 @@ status = git_ops.get_status('/path/to/repo')
 
 ### As a REST API Service
 
-SheLLama can be run as a standalone REST API service:
+SheLLama is designed to run as a standalone REST API service that communicates with the APILama gateway:
 
 ```bash
 # Start the SheLLama API server
 python -m shellama.app --port 8002 --host 127.0.0.1
+```
+
+Using environment variables:
+
+```bash
+export PORT=8002
+export HOST=127.0.0.1
+export DEBUG=False
+python -m shellama.app
 ```
 
 Or using the Makefile:
@@ -71,6 +83,19 @@ Or using the Makefile:
 ```bash
 make run PORT=8002 HOST=127.0.0.1
 ```
+
+### Environment Variables
+
+SheLLama uses the following environment variables for configuration:
+
+- `PORT`: The port to run the server on (default: 8002)
+- `HOST`: The host to bind to (default: 127.0.0.1)
+- `DEBUG`: Enable debug mode (default: False)
+- `LOG_LEVEL`: Logging level (default: INFO)
+- `LOG_FILE`: Log file path (default: shellama.log)
+- `SECRET_KEY`: Secret key for secure operations
+
+You can set these variables in a `.env` file or pass them directly when starting the server.
 
 #### API Endpoints
 
@@ -96,18 +121,51 @@ make run PORT=8002 HOST=127.0.0.1
 
 ## Development
 
+### Setting Up the Development Environment
+
 ```bash
+# Create a virtual environment
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
 # Install development dependencies
 pip install -e ".[dev]"
+```
 
-# Run tests
+### Running Tests
+
+```bash
+# Run all tests
 python -m pytest
 
-# Format code
+# Run specific test file
+python -m pytest tests/test_file_ops.py
+
+# Run with coverage report
+python -m pytest --cov=shellama tests/
+```
+
+### Code Quality
+
+```bash
+# Format code with Black
 black shellama tests
 
-# Lint code
+# Lint code with Flake8
 flake8 shellama tests
+
+# Type checking with MyPy
+mypy shellama
+```
+
+### Docker Development
+
+```bash
+# Build the Docker image
+docker build -t shellama .
+
+# Run the container
+docker run -p 8002:8002 shellama
 ```
 
 ## License
