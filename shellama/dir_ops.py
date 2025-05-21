@@ -137,6 +137,11 @@ def get_directory_size(directory_path: str) -> int:
     """
     logger.info(f"Getting directory size: {directory_path}")
     
+    # Check if the directory exists first
+    if not os.path.isdir(directory_path):
+        logger.error(f"Directory not found: {directory_path}")
+        raise FileNotFoundError(f"Directory not found: {directory_path}")
+    
     try:
         total_size = 0
         for dirpath, dirnames, filenames in os.walk(directory_path):
@@ -144,8 +149,8 @@ def get_directory_size(directory_path: str) -> int:
                 file_path = os.path.join(dirpath, filename)
                 total_size += os.path.getsize(file_path)
         return total_size
-    except FileNotFoundError:
-        logger.error(f"Directory not found: {directory_path}")
+    except Exception as e:
+        logger.error(f"Error getting directory size for {directory_path}: {str(e)}")
         raise
 
 
