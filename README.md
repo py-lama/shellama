@@ -1,6 +1,6 @@
 # SheLLama
 
-SheLLama is a Python package for shell and filesystem operations in the PyLama ecosystem. It provides a unified interface for file management, directory operations, and shell command execution.
+SheLLama is a Python package for shell and filesystem operations in the PyLama ecosystem. It provides a unified interface for file management, directory operations, and shell command execution, available both as a Python library and a REST API service.
 
 ## Features
 
@@ -22,6 +22,8 @@ pip install -e .
 ```
 
 ## Usage
+
+### As a Python Library
 
 ```python
 # File operations
@@ -47,7 +49,50 @@ from shellama import shell
 
 # Execute a shell command
 result = shell.execute_command('ls -la')
+
+# Git operations
+from shellama import git_ops
+
+# Get git status
+status = git_ops.get_status('/path/to/repo')
 ```
+
+### As a REST API Service
+
+SheLLama can be run as a standalone REST API service:
+
+```bash
+# Start the SheLLama API server
+python -m shellama.app --port 8002 --host 127.0.0.1
+```
+
+Or using the Makefile:
+
+```bash
+make run PORT=8002 HOST=127.0.0.1
+```
+
+#### API Endpoints
+
+**File Operations:**
+- `GET /files?directory=/path/to/dir` - List files in a directory
+- `GET /file?filename=/path/to/file.md` - Get file content
+- `POST /file` - Save file content (JSON body: `{"filename": "path", "content": "data"}`)
+- `DELETE /file?filename=/path/to/file.md` - Delete a file
+
+**Directory Operations:**
+- `GET /directory?path=/path/to/dir` - Get directory information
+- `POST /directory` - Create a directory (JSON body: `{"path": "/path/to/dir"}`)
+- `DELETE /directory?path=/path/to/dir` - Delete a directory
+
+**Shell Operations:**
+- `POST /shell` - Execute a shell command (JSON body: `{"command": "ls -la", "cwd": "/path/to/dir"}`)
+
+**Git Operations:**
+- `GET /git/status?path=/path/to/repo` - Get git repository status
+- `POST /git/init` - Initialize a git repository (JSON body: `{"path": "/path/to/dir"}`)
+- `POST /git/commit` - Commit changes (JSON body: `{"path": "/path/to/repo", "message": "commit message"}`)
+- `GET /git/log?path=/path/to/repo` - Get git commit history
 
 ## Development
 

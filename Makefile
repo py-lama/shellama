@@ -37,8 +37,12 @@ format: setup
 	$(BLACK) shellama/ tests/
 
 # Run the CLI tool
-run: setup
+cli: setup
 	$(VENV)/bin/shellama
+
+# Run the REST API server
+run: setup
+	$(VENV)/bin/python -m shellama.app --port $(PORT) --host $(HOST)
 
 # Clean up
 clean:
