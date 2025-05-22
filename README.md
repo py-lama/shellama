@@ -166,6 +166,14 @@ make ansible-test-dir    # Run only directory operations tests
 make ansible-test-shell  # Run only shell operations tests
 make ansible-test-error  # Run only error handling tests
 
+# Direct targets that bypass the virtual environment (for systems with permission issues)
+make ansible-test-direct         # Run all tests directly
+make ansible-test-git-direct    # Run only Git operations tests directly
+make ansible-test-file-direct   # Run only file operations tests directly
+make ansible-test-dir-direct    # Run only directory operations tests directly
+make ansible-test-shell-direct  # Run only shell operations tests directly
+make ansible-test-error-direct  # Run only error handling tests directly
+
 # Run with additional options
 make ansible-test ANSIBLE_OPTS="--verbose --no-cleanup"
 

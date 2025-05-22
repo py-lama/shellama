@@ -81,6 +81,32 @@ ansible-test-shell:
 ansible-test-error:
 	./run_ansible_tests.sh --test-file=run_error_tests.yml --skip-health-check $(ANSIBLE_OPTS)
 
+# Direct targets that bypass the script and virtual environment completely
+ansible-test-git-direct:
+	@echo "Running Git operations tests directly..."
+	ansible-playbook ansible_tests/run_git_tests.yml $(ANSIBLE_OPTS)
+
+# Direct targets with dry-run option
+ansible-test-git-syntax:
+	@echo "Validating Git operations tests syntax..."
+	ansible-playbook --syntax-check ansible_tests/run_git_tests.yml
+
+ansible-test-file-direct:
+	@echo "Running File operations tests directly..."
+	ansible-playbook ansible_tests/run_file_tests.yml $(ANSIBLE_OPTS)
+
+ansible-test-dir-direct:
+	@echo "Running Directory operations tests directly..."
+	ansible-playbook ansible_tests/run_dir_tests.yml $(ANSIBLE_OPTS)
+
+ansible-test-shell-direct:
+	@echo "Running Shell operations tests directly..."
+	ansible-playbook ansible_tests/run_shell_tests.yml $(ANSIBLE_OPTS)
+
+ansible-test-error-direct:
+	@echo "Running Error handling tests directly..."
+	ansible-playbook ansible_tests/run_error_tests.yml $(ANSIBLE_OPTS)
+
 # Clean up
 clean:
 	rm -rf $(VENV) *.egg-info build/ dist/ __pycache__/ .pytest_cache/ .coverage
