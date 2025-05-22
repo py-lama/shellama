@@ -24,7 +24,7 @@ GREEN := \033[0;32m
 YELLOW := \033[1;33m
 NC := \033[0m # No Color
 
-.PHONY: all setup venv clean test lint format run ansible-test
+.PHONY: all setup venv clean test lint format run ansible-test stop
 
 all: setup
 
@@ -252,3 +252,35 @@ ansible-test-env-shell:
 clean:
 	rm -rf $(VENV) *.egg-info build/ dist/ __pycache__/ .pytest_cache/ .coverage
 	rm -rf ansible_tests/logs/*
+
+# Stop all services, Docker containers, and free up ports
+stop:
+	@echo -e "$(GREEN)Stopping all services and Docker containers...$(NC)"
+	@echo -e "$(YELLOW)Stopping Ansible testing environment...$(NC)"
+	cd test_markdown/devops_tools && docker-compose -f ansible_test_docker_compose.yml down || true
+	@echo -e "$(YELLOW)Stopping any running Python processes on ports 8002, 8080, 9002, 9080, 19002, 19080...$(NC)"
+	-pkill -f "python -m shellama.app --port $(PORT)" || true
+	-pkill -f "python -m shellama.app --port 8002" || true
+	-pkill -f "python -m shellama.app --port 9002" || true
+	-pkill -f "python -m shellama.app --port 19002" || true
+	-pkill -f "python -m apilama.app --port 8080" || true
+	-pkill -f "python -m apilama.app --port 9080" || true
+	-pkill -f "python -m apilama.app --port 19080" || true
+	@echo -e "$(YELLOW)Stopping any Docker containers related to PyLama ecosystem...$(NC)"
+	-docker stop $(shell docker ps -q --filter name="py-lama-*") 2>/dev/null || true
+	-docker stop $(shell docker ps -q --filter name="shellama-*") 2>/dev/null || true
+	-docker stop $(shell docker ps -q --filter name="apilama-*") 2>/dev/null || true
+	-docker stop $(shell docker ps -q --filter name="pylama-*") 2>/dev/null || true
+	-docker stop $(shell docker ps -q --filter name="pyllm-*") 2>/dev/null || true
+	-docker stop $(shell docker ps -q --filter name="pybox-*") 2>/dev/null || true
+	@echo -e "$(YELLOW)Checking if any processes are still using the ports...$(NC)"
+	-lsof -i :8002 || true
+	-lsof -i :8080 || true
+	-lsof -i :9002 || true
+	-lsof -i :9080 || true
+	-lsof -i :19002 || true
+	-lsof -i :19080 || true
+	-lsof -i :19000 || true
+	-lsof -i :19001 || true
+	-lsof -i :19003 || true
+	@echo -e "$(GREEN)All services and Docker containers have been stopped.$(NC)"
