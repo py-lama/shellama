@@ -133,6 +133,11 @@ ansible-test-git-mock:
 	@echo "Running mock Git operations tests (no services required)..."
 	ansible-playbook ansible_tests/mock_git_tests.yml $(ANSIBLE_OPTS)
 
+# Verify test markdown directory
+verify-test-markdown:
+	@echo "Verifying test markdown directory structure..."
+	python test_markdown/verify_test_files.py
+
 # Clean up
 clean:
 	rm -rf $(VENV) *.egg-info build/ dist/ __pycache__/ .pytest_cache/ .coverage

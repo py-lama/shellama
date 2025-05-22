@@ -1,0 +1,238 @@
+{
+  "timestamp": "2025-05-22 10:43:33",
+  "base_directory": "/home/tom/github/py-lama/shellama/test_markdown",
+  "subdirectories": {
+    "file_operations": {
+      "path": "/home/tom/github/py-lama/shellama/test_markdown/file_operations",
+      "files": [
+        {
+          "name": "README.md",
+          "size": 976,
+          "last_modified": "2025-05-22 10:30:21",
+          "readable": true,
+          "writable": true,
+          "executable": false
+        },
+        {
+          "name": "simple_text.txt",
+          "size": 294,
+          "last_modified": "2025-05-22 10:30:29",
+          "readable": true,
+          "writable": true,
+          "executable": false
+        },
+        {
+          "name": "markdown_example.md",
+          "size": 1216,
+          "last_modified": "2025-05-22 10:30:41",
+          "readable": true,
+          "writable": true,
+          "executable": false
+        },
+        {
+          "name": "config_example.json",
+          "size": 2833,
+          "last_modified": "2025-05-22 10:31:06",
+          "readable": true,
+          "writable": true,
+          "executable": false
+        },
+        {
+          "name": "script_example.py",
+          "size": 4865,
+          "last_modified": "2025-05-22 10:31:32",
+          "readable": true,
+          "writable": true,
+          "executable": false
+        },
+        {
+          "name": "large_file.txt",
+          "size": 98989,
+          "last_modified": "2025-05-22 10:31:48",
+          "readable": true,
+          "writable": true,
+          "executable": false
+        }
+      ],
+      "file_count": 6
+    },
+    "git_operations": {
+      "path": "/home/tom/github/py-lama/shellama/test_markdown/git_operations",
+      "files": [
+        {
+          "name": "README.md",
+          "size": 1050,
+          "last_modified": "2025-05-22 10:31:59",
+          "readable": true,
+          "writable": true,
+          "executable": false
+        },
+        {
+          "name": "main_file.md",
+          "size": 925,
+          "last_modified": "2025-05-22 10:32:10",
+          "readable": true,
+          "writable": true,
+          "executable": false
+        },
+        {
+          "name": "feature_file.md",
+          "size": 894,
+          "last_modified": "2025-05-22 10:32:20",
+          "readable": true,
+          "writable": true,
+          "executable": false
+        },
+        {
+          "name": "conflict_file.md",
+          "size": 933,
+          "last_modified": "2025-05-22 10:32:31",
+          "readable": true,
+          "writable": true,
+          "executable": false
+        },
+        {
+          "name": "project_code.py",
+          "size": 3304,
+          "last_modified": "2025-05-22 10:33:56",
+          "readable": true,
+          "writable": true,
+          "executable": false
+        },
+        {
+          "name": "config.json",
+          "size": 996,
+          "last_modified": "2025-05-22 10:34:14",
+          "readable": true,
+          "writable": true,
+          "executable": false
+        }
+      ],
+      "file_count": 6
+    },
+    "shell_commands": {
+      "path": "/home/tom/github/py-lama/shellama/test_markdown/shell_commands",
+      "files": [
+        {
+          "name": "README.md",
+          "size": 1247,
+          "last_modified": "2025-05-22 10:34:29",
+          "readable": true,
+          "writable": true,
+          "executable": false
+        },
+        {
+          "name": "test_script.sh",
+          "size": 3246,
+          "last_modified": "2025-05-22 10:34:53",
+          "readable": true,
+          "writable": true,
+          "executable": true
+        },
+        {
+          "name": "data_processing.sh",
+          "size": 2868,
+          "last_modified": "2025-05-22 10:35:13",
+          "readable": true,
+          "writable": true,
+          "executable": true
+        },
+        {
+          "name": "sample_data.txt",
+          "size": 1061,
+          "last_modified": "2025-05-22 10:35:27",
+          "readable": true,
+          "writable": true,
+          "executable": false
+        },
+        {
+          "name": "environment_test.sh",
+          "size": 2848,
+          "last_modified": "2025-05-22 10:35:47",
+          "readable": true,
+          "writable": true,
+          "executable": true
+        },
+        {
+          "name": "error_test.sh",
+          "size": 4020,
+          "last_modified": "2025-05-22 10:36:14",
+          "readable": true,
+          "writable": true,
+          "executable": true
+        }
+      ],
+      "file_count": 6
+    },
+    "devops_tools": {
+      "path": "/home/tom/github/py-lama/shellama/test_markdown/devops_tools",
+      "files": [
+        {
+          "name": "README.md",
+          "size": 1231,
+          "last_modified": "2025-05-22 10:36:46",
+          "readable": true,
+          "writable": true,
+          "executable": false
+        },
+        {
+          "name": "Dockerfile",
+          "size": 1297,
+          "last_modified": "2025-05-22 10:36:59",
+          "readable": true,
+          "writable": true,
+          "executable": false
+        },
+        {
+          "name": "docker-compose.yml",
+          "size": 5257,
+          "last_modified": "2025-05-22 10:37:27",
+          "readable": true,
+          "writable": true,
+          "executable": false
+        },
+        {
+          "name": "ansible_playbook.yml",
+          "size": 8208,
+          "last_modified": "2025-05-22 10:38:07",
+          "readable": true,
+          "writable": true,
+          "executable": false
+        },
+        {
+          "name": "terraform_example.tf",
+          "size": 7685,
+          "last_modified": "2025-05-22 10:38:46",
+          "readable": true,
+          "writable": true,
+          "executable": false
+        },
+        {
+          "name": "kubernetes_deployment.yml",
+          "size": 10135,
+          "last_modified": "2025-05-22 10:39:34",
+          "readable": true,
+          "writable": true,
+          "executable": false
+        },
+        {
+          "name": "jenkins_pipeline.groovy",
+          "size": 4617,
+          "last_modified": "2025-05-22 10:39:58",
+          "readable": true,
+          "writable": true,
+          "executable": false
+        },
+        {
+          "name": "github_workflow.yml",
+          "size": 5440,
+          "last_modified": "2025-05-22 10:40:26",
+          "readable": true,
+          "writable": true,
+          "executable": false
+        }
+      ],
+      "file_count": 8
+    }
+  }
+}

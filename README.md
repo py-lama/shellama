@@ -149,6 +149,10 @@ python -m pytest --cov=shellama tests/
 
 SheLLama includes a comprehensive suite of Ansible tests that verify the functionality of all API endpoints. These tests ensure that the service works correctly and can be integrated with other systems.
 
+#### Docker Testing Environment
+
+A Docker testing environment is available for testing SheLLama without requiring the actual services to be running:
+
 ```bash
 # Build and run all tests
 ./run_docker_tests.sh --build --run-tests
@@ -162,6 +166,22 @@ SheLLama includes a comprehensive suite of Ansible tests that verify the functio
 # Stop containers when done
 ./run_docker_tests.sh --stop
 ```
+
+See the `DOCKER_TESTING.md` file for more detailed information about the Docker testing environment.
+
+#### Test Markdown Directory
+
+A comprehensive test markdown directory is included in the project to support testing of all SheLLama functionality:
+
+```
+/test_markdown/
+├── file_operations/       # For testing file handling functions
+├── git_operations/        # For testing Git functionality
+├── shell_commands/        # For testing shell command execution
+└── devops_tools/          # For testing DevOps tools integration
+```
+
+This directory contains example files for testing various aspects of SheLLama, including file operations, Git functionality, shell command execution, and DevOps tools integration. See the `test_markdown/README.md` file for more information.
 
 ```bash
 # Run all Ansible tests (requires APILama and SheLLama to be running)
@@ -198,6 +218,9 @@ make ansible-test-error-syntax  # Validate Error handling tests syntax
 
 # Mock test targets (no services or virtual environment needed)
 make ansible-test-git-mock     # Run Git operations tests with mocked responses
+
+# Test markdown verification
+make verify-test-markdown     # Verify test markdown directory structure
 
 # Run with additional options
 make ansible-test ANSIBLE_OPTS="--verbose --no-cleanup"
