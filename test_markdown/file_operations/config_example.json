@@ -1,0 +1,121 @@
+{
+  "application": {
+    "name": "SheLLama",
+    "version": "1.0.0",
+    "description": "Shell command execution service for PyLama ecosystem"
+  },
+  "server": {
+    "host": "localhost",
+    "port": 5000,
+    "debug": true,
+    "timeout": 30
+  },
+  "api": {
+    "base_path": "/api/shellama",
+    "endpoints": [
+      {
+        "path": "/health",
+        "method": "GET",
+        "description": "Health check endpoint"
+      },
+      {
+        "path": "/shell/exec",
+        "method": "POST",
+        "description": "Execute shell command"
+      },
+      {
+        "path": "/file/read",
+        "method": "POST",
+        "description": "Read file content"
+      },
+      {
+        "path": "/file/create",
+        "method": "POST",
+        "description": "Create new file"
+      },
+      {
+        "path": "/file/update",
+        "method": "POST",
+        "description": "Update existing file"
+      },
+      {
+        "path": "/file/delete",
+        "method": "POST",
+        "description": "Delete file"
+      },
+      {
+        "path": "/dir/list",
+        "method": "POST",
+        "description": "List directory contents"
+      },
+      {
+        "path": "/dir/create",
+        "method": "POST",
+        "description": "Create directory"
+      },
+      {
+        "path": "/dir/delete",
+        "method": "POST",
+        "description": "Delete directory"
+      },
+      {
+        "path": "/git/init",
+        "method": "POST",
+        "description": "Initialize Git repository"
+      },
+      {
+        "path": "/git/status",
+        "method": "POST",
+        "description": "Check Git repository status"
+      },
+      {
+        "path": "/git/add",
+        "method": "POST",
+        "description": "Add files to Git staging area"
+      },
+      {
+        "path": "/git/commit",
+        "method": "POST",
+        "description": "Commit changes to Git repository"
+      },
+      {
+        "path": "/git/branch",
+        "method": "POST",
+        "description": "Create Git branch"
+      },
+      {
+        "path": "/git/checkout",
+        "method": "POST",
+        "description": "Checkout Git branch"
+      },
+      {
+        "path": "/git/merge",
+        "method": "POST",
+        "description": "Merge Git branches"
+      },
+      {
+        "path": "/git/history",
+        "method": "POST",
+        "description": "View Git commit history"
+      }
+    ]
+  },
+  "logging": {
+    "level": "INFO",
+    "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    "file": "shellama.log"
+  },
+  "security": {
+    "allowed_origins": ["http://localhost:3000", "http://localhost:8080"],
+    "require_authentication": false,
+    "rate_limit": {
+      "enabled": true,
+      "requests_per_minute": 60
+    }
+  },
+  "testing": {
+    "enabled": true,
+    "test_directory": "/tmp/shellama_test",
+    "cleanup_after_tests": true
+  }
+}

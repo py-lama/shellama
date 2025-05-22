@@ -150,6 +150,20 @@ python -m pytest --cov=shellama tests/
 SheLLama includes a comprehensive suite of Ansible tests that verify the functionality of all API endpoints. These tests ensure that the service works correctly and can be integrated with other systems.
 
 ```bash
+# Build and run all tests
+./run_docker_tests.sh --build --run-tests
+
+# Start in interactive mode
+./run_docker_tests.sh --interactive
+
+# Run only Git operations tests
+./run_docker_tests.sh --test-git
+
+# Stop containers when done
+./run_docker_tests.sh --stop
+```
+
+```bash
 # Run all Ansible tests (requires APILama and SheLLama to be running)
 make ansible-test
 

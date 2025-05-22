@@ -1,0 +1,9 @@
+This is a simple text file for testing basic file operations.
+
+It contains multiple lines of plain text.
+This can be used to test reading, writing, and editing operations.
+
+Line 5: This line can be modified during testing.
+Line 6: This line can be deleted during testing.
+
+The end of the file.
