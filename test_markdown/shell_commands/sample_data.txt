@@ -1,0 +1,73 @@
+# Sample data for SheLLama shell command testing
+
+Apple 5 Red Fruit
+Banana 3 Yellow Fruit
+Carrot 8 Orange Vegetable
+Dragon Fruit 2 Pink Fruit
+Eggplant 4 Purple Vegetable
+Fig 6 Purple Fruit
+Grape 12 Green Fruit
+Honeydew 1 Green Fruit
+Iceberg Lettuce 2 Green Vegetable
+Jalapeño 7 Green Vegetable
+Kiwi 9 Brown Fruit
+Lemon 5 Yellow Fruit
+Mango 3 Orange Fruit
+Nectarine 4 Orange Fruit
+Orange 6 Orange Fruit
+Peach 4 Orange Fruit
+Quince 2 Yellow Fruit
+Radish 8 Red Vegetable
+Strawberry 15 Red Fruit
+Tomato 10 Red Fruit/Vegetable
+Ugli Fruit 1 Yellow Fruit
+Vanilla Bean 3 Brown Spice
+Watermelon 1 Green Fruit
+Xigua 1 Green Fruit
+Yellow Squash 5 Yellow Vegetable
+Zucchini 7 Green Vegetable
+
+# Categories
+
+## Fruits
+Apple
+Banana
+Dragon Fruit
+Fig
+Grape
+Honeydew
+Kiwi
+Lemon
+Mango
+Nectarine
+Orange
+Peach
+Quince
+Strawberry
+Ugli Fruit
+Watermelon
+Xigua
+
+## Vegetables
+Carrot
+Eggplant
+Iceberg Lettuce
+Jalapeño
+Radish
+Yellow Squash
+Zucchini
+
+## Other
+Vanilla Bean
+Tomato
+
+# Color Distribution
+Red: 4
+Yellow: 5
+Orange: 5
+Green: 6
+Purple: 2
+Pink: 1
+Brown: 2
+
+# End of sample data

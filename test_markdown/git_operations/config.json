@@ -1,0 +1,49 @@
+{
+  "project": {
+    "name": "SheLLama Test Project",
+    "version": "1.0.0",
+    "description": "A test project for Git operations in SheLLama"
+  },
+  "environment": {
+    "development": {
+      "api_url": "http://localhost:5000",
+      "debug": true,
+      "log_level": "DEBUG"
+    },
+    "testing": {
+      "api_url": "http://test-api.example.com",
+      "debug": true,
+      "log_level": "INFO"
+    },
+    "production": {
+      "api_url": "https://api.example.com",
+      "debug": false,
+      "log_level": "WARNING"
+    }
+  },
+  "features": {
+    "git_operations": true,
+    "file_operations": true,
+    "shell_commands": true,
+    "error_handling": true
+  },
+  "dependencies": [
+    {
+      "name": "flask",
+      "version": "2.0.1"
+    },
+    {
+      "name": "requests",
+      "version": "2.26.0"
+    },
+    {
+      "name": "gitpython",
+      "version": "3.1.24"
+    }
+  ],
+  "testing": {
+    "enabled": true,
+    "frameworks": ["pytest", "ansible"],
+    "test_directory": "./tests"
+  }
+}
