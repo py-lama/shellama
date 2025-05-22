@@ -138,6 +138,27 @@ You can set these variables in a `.env` file or pass them directly when starting
 
 SheLLama supports multiple dependency management tools for flexibility. Choose the approach that works best for your workflow.
 
+### Managing Services
+
+The Makefile provides several targets to help manage services and Docker containers:
+
+```bash
+# Start the SheLLama service
+make run PORT=8002 HOST=0.0.0.0
+
+# Start the Ansible testing environment
+make ansible-test-env-up
+
+# Stop all services, Docker containers, and free up ports
+make stop
+```
+
+The `stop` target will:
+- Stop all running Python processes for SheLLama and APILama on standard ports (8002, 8080, 9002, 9080, 19002, 19080)
+- Stop and remove all Docker containers related to the PyLama ecosystem
+- Stop the Ansible testing environment
+- Check for any processes still using the relevant ports
+
 #### Using pip and venv (Standard)
 
 ```bash
