@@ -1,0 +1,297 @@
+---
+# Example Ansible playbook for SheLLama DevOps tools testing
+
+- name: Deploy PyLama Microservices
+  hosts: pylama_servers
+  become: true
+  vars:
+    app_user: pylama
+    app_group: pylama
+    base_dir: /opt/pylama
+    config_dir: /etc/pylama
+    log_dir: /var/log/pylama
+    data_dir: /var/lib/pylama
+    shellama_port: 5000
+    apilama_port: 5001
+    pyllm_port: 5002
+    pybox_port: 5003
+    weblama_port: 3000
+    enable_monitoring: true
+    enable_ssl: true
+    ssl_cert_path: /etc/ssl/certs/pylama.crt
+    ssl_key_path: /etc/ssl/private/pylama.key
+  
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+      when: ansible_os_family == "Debian"
+    
+    - name: Install required packages
+      package:
+        name:
+          - git
+          - python3
+          - python3-pip
+          - python3-venv
+          - nginx
+          - certbot
+          - python3-certbot-nginx
+          - supervisor
+          - curl
+          - wget
+          - gnupg
+          - lsb-release
+          - ca-certificates
+        state: present
+    
+    - name: Create PyLama user
+      user:
+        name: "{{ app_user }}"
+        group: "{{ app_group }}"
+        system: yes
+        createhome: no
+        shell: /bin/bash
+    
+    - name: Create application directories
+      file:
+        path: "{{ item }}"
+        state: directory
+        owner: "{{ app_user }}"
+        group: "{{ app_group }}"
+        mode: '0755'
+      with_items:
+        - "{{ base_dir }}"
+        - "{{ config_dir }}"
+        - "{{ log_dir }}"
+        - "{{ data_dir }}"
+        - "{{ base_dir }}/shellama"
+        - "{{ base_dir }}/apilama"
+        - "{{ base_dir }}/pyllm"
+        - "{{ base_dir }}/pybox"
+        - "{{ base_dir }}/weblama"
+    
+    # Clone repositories
+    - name: Clone SheLLama repository
+      git:
+        repo: https://github.com/py-lama/shellama.git
+        dest: "{{ base_dir }}/shellama"
+        version: main
+        update: yes
+      become_user: "{{ app_user }}"
+    
+    - name: Clone APILama repository
+      git:
+        repo: https://github.com/py-lama/apilama.git
+        dest: "{{ base_dir }}/apilama"
+        version: main
+        update: yes
+      become_user: "{{ app_user }}"
+    
+    - name: Clone PyLLM repository
+      git:
+        repo: https://github.com/py-lama/pyllm.git
+        dest: "{{ base_dir }}/pyllm"
+        version: main
+        update: yes
+      become_user: "{{ app_user }}"
+    
+    - name: Clone PyBox repository
+      git:
+        repo: https://github.com/py-lama/pybox.git
+        dest: "{{ base_dir }}/pybox"
+        version: main
+        update: yes
+      become_user: "{{ app_user }}"
+    
+    - name: Clone WebLama repository
+      git:
+        repo: https://github.com/py-lama/weblama.git
+        dest: "{{ base_dir }}/weblama"
+        version: main
+        update: yes
+      become_user: "{{ app_user }}"
+    
+    # Setup Python virtual environments and install dependencies
+    - name: Create virtual environments
+      pip:
+        virtualenv: "{{ base_dir }}/{{ item }}/venv"
+        virtualenv_command: python3 -m venv
+      with_items:
+        - shellama
+        - apilama
+        - pyllm
+        - pybox
+      become_user: "{{ app_user }}"
+    
+    - name: Install Python dependencies
+      pip:
+        requirements: "{{ base_dir }}/{{ item }}/requirements.txt"
+        virtualenv: "{{ base_dir }}/{{ item }}/venv"
+      with_items:
+        - shellama
+        - apilama
+        - pyllm
+        - pybox
+      become_user: "{{ app_user }}"
+    
+    # Configure services
+    - name: Create SheLLama configuration
+      template:
+        src: templates/shellama.env.j2
+        dest: "{{ config_dir }}/shellama.env"
+        owner: "{{ app_user }}"
+        group: "{{ app_group }}"
+        mode: '0644'
+    
+    - name: Create APILama configuration
+      template:
+        src: templates/apilama.env.j2
+        dest: "{{ config_dir }}/apilama.env"
+        owner: "{{ app_user }}"
+        group: "{{ app_group }}"
+        mode: '0644'
+    
+    - name: Create PyLLM configuration
+      template:
+        src: templates/pyllm.env.j2
+        dest: "{{ config_dir }}/pyllm.env"
+        owner: "{{ app_user }}"
+        group: "{{ app_group }}"
+        mode: '0644'
+    
+    - name: Create PyBox configuration
+      template:
+        src: templates/pybox.env.j2
+        dest: "{{ config_dir }}/pybox.env"
+        owner: "{{ app_user }}"
+        group: "{{ app_group }}"
+        mode: '0644'
+    
+    - name: Create WebLama configuration
+      template:
+        src: templates/weblama.env.j2
+        dest: "{{ config_dir }}/weblama.env"
+        owner: "{{ app_user }}"
+        group: "{{ app_group }}"
+        mode: '0644'
+    
+    # Setup Supervisor for service management
+    - name: Create Supervisor configuration for SheLLama
+      template:
+        src: templates/supervisor_shellama.conf.j2
+        dest: /etc/supervisor/conf.d/shellama.conf
+        owner: root
+        group: root
+        mode: '0644'
+    
+    - name: Create Supervisor configuration for APILama
+      template:
+        src: templates/supervisor_apilama.conf.j2
+        dest: /etc/supervisor/conf.d/apilama.conf
+        owner: root
+        group: root
+        mode: '0644'
+    
+    - name: Create Supervisor configuration for PyLLM
+      template:
+        src: templates/supervisor_pyllm.conf.j2
+        dest: /etc/supervisor/conf.d/pyllm.conf
+        owner: root
+        group: root
+        mode: '0644'
+    
+    - name: Create Supervisor configuration for PyBox
+      template:
+        src: templates/supervisor_pybox.conf.j2
+        dest: /etc/supervisor/conf.d/pybox.conf
+        owner: root
+        group: root
+        mode: '0644'
+    
+    - name: Create Supervisor configuration for WebLama
+      template:
+        src: templates/supervisor_weblama.conf.j2
+        dest: /etc/supervisor/conf.d/weblama.conf
+        owner: root
+        group: root
+        mode: '0644'
+    
+    - name: Reload Supervisor configuration
+      command: supervisorctl reload
+    
+    # Setup Nginx for reverse proxy
+    - name: Create Nginx configuration
+      template:
+        src: templates/nginx_pylama.conf.j2
+        dest: /etc/nginx/sites-available/pylama.conf
+        owner: root
+        group: root
+        mode: '0644'
+    
+    - name: Enable Nginx site
+      file:
+        src: /etc/nginx/sites-available/pylama.conf
+        dest: /etc/nginx/sites-enabled/pylama.conf
+        state: link
+    
+    - name: Remove default Nginx site
+      file:
+        path: /etc/nginx/sites-enabled/default
+        state: absent
+    
+    - name: Restart Nginx
+      service:
+        name: nginx
+        state: restarted
+        enabled: yes
+    
+    # Setup SSL certificates if enabled
+    - name: Setup SSL certificates with Certbot
+      command: >-
+        certbot --nginx -d {{ inventory_hostname }} --non-interactive --agree-tos 
+        --email admin@example.com --redirect
+      when: enable_ssl
+    
+    # Setup monitoring if enabled
+    - name: Install Prometheus Node Exporter
+      apt:
+        name: prometheus-node-exporter
+        state: present
+      when: enable_monitoring and ansible_os_family == "Debian"
+    
+    - name: Start and enable Node Exporter
+      service:
+        name: prometheus-node-exporter
+        state: started
+        enabled: yes
+      when: enable_monitoring and ansible_os_family == "Debian"
+    
+    # Verify services are running
+    - name: Check SheLLama service
+      uri:
+        url: http://localhost:{{ shellama_port }}/api/shellama/health
+        return_content: yes
+      register: shellama_health
+      until: shellama_health.status == 200
+      retries: 5
+      delay: 10
+      ignore_errors: yes
+    
+    - name: Check APILama service
+      uri:
+        url: http://localhost:{{ apilama_port }}/api/health
+        return_content: yes
+      register: apilama_health
+      until: apilama_health.status == 200
+      retries: 5
+      delay: 10
+      ignore_errors: yes
+    
+    - name: Display service status
+      debug:
+        msg: |
+          Service Status:
+          - SheLLama: {{ 'OK' if shellama_health.status == 200 else 'FAILED' }}
+          - APILama: {{ 'OK' if apilama_health.status == 200 else 'FAILED' }}
