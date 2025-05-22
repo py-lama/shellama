@@ -12,6 +12,9 @@ SheLLama is a dedicated REST API service for shell and filesystem operations in 
 - **Secure File Handling**: Proper permissions and security checks for all operations
 - **Cross-Origin Support**: CORS headers for integration with web applications
 - **Detailed Logging**: Comprehensive logging of all operations for debugging and auditing
+- **Advanced Error Handling**: Standardized error responses with categorization and severity levels
+- **Debug Window Integration**: Real-time debugging information with filtering capabilities
+- **Dependency Management**: Support for pip, Poetry, and Pipenv for flexible dependency management
 
 ## Installation
 
@@ -119,9 +122,23 @@ You can set these variables in a `.env` file or pass them directly when starting
 - `POST /git/commit` - Commit changes (JSON body: `{"path": "/path/to/repo", "message": "commit message"}`)
 - `GET /git/log?path=/path/to/repo` - Get git commit history
 
+**Debug Operations:**
+- `GET /api/debug/status` - Get debug window status
+- `GET /api/debug/entries` - Get debug entries with optional filtering
+- `POST /api/debug/clear` - Clear all debug entries
+- `POST /api/debug/enable` - Enable the debug window
+- `POST /api/debug/disable` - Disable the debug window
+- `GET /api/debug/categories` - Get all available debug categories
+- `GET /api/debug/levels` - Get all available debug levels
+- `POST /api/debug/add` - Add a debug entry
+
 ## Development
 
 ### Setting Up the Development Environment
+
+SheLLama supports multiple dependency management tools for flexibility. Choose the approach that works best for your workflow.
+
+#### Using pip and venv (Standard)
 
 ```bash
 # Create a virtual environment
@@ -130,6 +147,32 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 
 # Install development dependencies
 pip install -e ".[dev]"
+```
+
+#### Using Poetry
+
+```bash
+# Install dependencies with Poetry
+poetry install
+
+# Activate the Poetry virtual environment
+poetry shell
+
+# Run a command without activating the environment
+poetry run python -m shellama.app
+```
+
+#### Using Pipenv
+
+```bash
+# Install dependencies with Pipenv
+pipenv install --dev
+
+# Activate the Pipenv virtual environment
+pipenv shell
+
+# Run a command without activating the environment
+pipenv run python -m shellama.app
 ```
 
 ### Running Tests
@@ -145,9 +188,76 @@ python -m pytest tests/test_file_ops.py
 python -m pytest --cov=shellama tests/
 ```
 
+### Error Handling and Debugging
+
+SheLLama includes a comprehensive error handling system that provides standardized error responses across the application. This system categorizes errors by type and severity, making it easier to identify and resolve issues.
+
+#### Error Categories
+
+- **Validation Errors**: Issues with input validation
+- **Permission Errors**: Access denied or insufficient permissions
+- **File System Errors**: Problems with file or directory operations
+- **Git Errors**: Issues with Git operations
+- **Shell Errors**: Problems executing shell commands
+- **Configuration Errors**: Issues with application configuration
+- **External Service Errors**: Problems with external services
+
+#### Debug Window
+
+The debug window provides real-time debugging information that can be accessed through the API. It captures detailed information about application operations, errors, and performance metrics.
+
+Features include:
+
+- **Filtering**: Filter debug entries by level, category, or source
+- **Real-time Capture**: Capture debugging information as it happens
+- **API Access**: Access debug information through REST API endpoints
+- **Configurable**: Enable or disable debugging at runtime
+
+```python
+# Using the debug window in code
+from shellama.debug_window import add_debug_entry, DebugLevel, DebugCategory
+
+# Add a debug entry
+add_debug_entry(
+    message="Processing file operation",
+    level=DebugLevel.INFO,
+    category=DebugCategory.FILE_OPERATIONS,
+    details={"filename": "example.txt", "operation": "read"}
+)
+```
+
 ### Ansible Integration Tests
 
 SheLLama includes a comprehensive suite of Ansible tests that verify the functionality of all API endpoints. These tests ensure that the service works correctly and can be integrated with other systems.
+
+#### Ansible Testing Environment
+
+A Docker-based Ansible testing environment is available for testing SheLLama and its integration with other PyLama components. This environment includes:
+
+- **Ansible Controller**: Container with Ansible and testing tools installed
+- **Service Targets**: Containers for each PyLama component
+- **Mock Services**: Containers that simulate services for testing integration
+
+To use the Ansible testing environment:
+
+```bash
+# Build the testing environment
+make ansible-test-env-build
+
+# Start the testing environment
+make ansible-test-env-up
+
+# Run tests in the environment
+make ansible-test-env-run
+
+# Open a shell in the controller container
+make ansible-test-env-shell
+
+# Stop the testing environment
+make ansible-test-env-down
+```
+
+See the `test_markdown/devops_tools/ANSIBLE_TESTING.md` file for more detailed information about the Ansible testing environment.
 
 #### Docker Testing Environment
 
