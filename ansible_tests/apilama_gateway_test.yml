@@ -1,0 +1,116 @@
+---
+# APILama Gateway Verification Tests
+# This playbook verifies that APILama functions as a gateway for all PyLama services
+
+- name: Verify APILama Gateway Functionality
+  hosts: localhost
+  gather_facts: false
+  vars:
+    apilama_url: "{{ lookup('env', 'APILAMA_URL') | default('http://localhost:8080', true) }}"
+    services:
+      - name: "shellama"
+        endpoint: "/api/shellama/health"
+        expected_service: "shellama"
+      - name: "pybox"
+        endpoint: "/api/pybox/health"
+        expected_service: "pybox"
+      - name: "pyllm"
+        endpoint: "/api/pyllm/health"
+        expected_service: "pyllm"
+      - name: "pylama"
+        endpoint: "/api/pylama/health"
+        expected_service: "pylama"
+      - name: "apilama"
+        endpoint: "/health"
+        expected_service: "apilama"
+      - name: "file_operations"
+        endpoint: "/api/files"
+        expected_key: "files"
+      - name: "git_operations"
+        endpoint: "/api/git/status"
+        expected_key: "git_status"
+  
+  tasks:
+    - name: Check APILama Gateway Health
+      uri:
+        url: "{{ apilama_url }}/health"
+        method: GET
+        return_content: yes
+        status_code: 200
+        body_format: json
+      register: apilama_health
+      ignore_errors: yes
+
+    - name: Display APILama Health Status
+      debug:
+        var: apilama_health.json
+      when: apilama_health.status == 200
+
+    - name: Verify APILama is Running
+      assert:
+        that:
+          - apilama_health.status == 200
+          - apilama_health.json.status == "ok"
+          - apilama_health.json.service == "apilama"
+        fail_msg: "APILama gateway is not running or not responding correctly"
+        success_msg: "APILama gateway is running and responding correctly"
+      ignore_errors: yes
+
+    - name: Check Each Service Through APILama Gateway
+      uri:
+        url: "{{ apilama_url }}{{ item.endpoint }}"
+        method: GET
+        return_content: yes
+        status_code: [200, 502, 503, 504]
+        body_format: json
+      register: service_results
+      loop: "{{ services }}"
+      ignore_errors: yes
+
+    - name: Display Service Results
+      debug:
+        msg: "Service: {{ item.item.name }} - Status: {{ item.status }} - Response: {{ item.json | to_json }}"
+      loop: "{{ service_results.results }}"
+
+    - name: Create Summary Report
+      set_fact:
+        gateway_summary: |
+          APILama Gateway Verification Summary:
+          ===============================
+          Gateway Status: {{ 'OK' if apilama_health.status == 200 else 'FAILED' }}
+          
+          Service Status:
+          {% for result in service_results.results %}
+          - {{ result.item.name }}: {{ 'Available' if result.status == 200 else 'Unavailable' }}
+          {% endfor %}
+          
+          Timestamp: {{ ansible_date_time.iso8601 if ansible_date_time is defined else lookup('pipe', 'date -u +"%Y-%m-%dT%H:%M:%SZ"') }}
+
+    - name: Display Gateway Summary
+      debug:
+        msg: "{{ gateway_summary.split('\n') }}"
+
+    - name: Save Gateway Summary to File
+      copy:
+        content: "{{ gateway_summary }}"
+        dest: "../test_markdown/devops_tools/reports/apilama_gateway_report.txt"
+      ignore_errors: yes
+
+    - name: Create Gateway Verification Report
+      set_fact:
+        gateway_report:
+          status: "{{ 'ok' if apilama_health.status == 200 else 'failed' }}"
+          timestamp: "{{ ansible_date_time.iso8601 if ansible_date_time is defined else lookup('pipe', 'date -u +"%Y-%m-%dT%H:%M:%SZ"') }}"
+          services: |
+            {% set service_list = [] %}
+            {% for result in service_results.results %}
+            {% set service_dict = {'name': result.item.name, 'status': 'available' if result.status == 200 else 'unavailable', 'response_code': result.status} %}
+            {% set _ = service_list.append(service_dict) %}
+            {% endfor %}
+            {{ service_list }}
+
+    - name: Save Gateway Verification Report as JSON
+      copy:
+        content: "{{ gateway_report | to_nice_json }}"
+        dest: "../test_markdown/devops_tools/reports/apilama_gateway_report.json"
+      ignore_errors: yes
