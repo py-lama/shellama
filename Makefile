@@ -95,17 +95,38 @@ ansible-test-file-direct:
 	@echo "Running File operations tests directly..."
 	ansible-playbook ansible_tests/run_file_tests.yml $(ANSIBLE_OPTS)
 
+ansible-test-file-syntax:
+	@echo "Validating File operations tests syntax..."
+	ansible-playbook --syntax-check ansible_tests/run_file_tests.yml
+
 ansible-test-dir-direct:
 	@echo "Running Directory operations tests directly..."
 	ansible-playbook ansible_tests/run_dir_tests.yml $(ANSIBLE_OPTS)
+
+ansible-test-dir-syntax:
+	@echo "Validating Directory operations tests syntax..."
+	ansible-playbook --syntax-check ansible_tests/run_dir_tests.yml
 
 ansible-test-shell-direct:
 	@echo "Running Shell operations tests directly..."
 	ansible-playbook ansible_tests/run_shell_tests.yml $(ANSIBLE_OPTS)
 
+ansible-test-shell-syntax:
+	@echo "Validating Shell operations tests syntax..."
+	ansible-playbook --syntax-check ansible_tests/run_shell_tests.yml
+
 ansible-test-error-direct:
 	@echo "Running Error handling tests directly..."
 	ansible-playbook ansible_tests/run_error_tests.yml $(ANSIBLE_OPTS)
+
+ansible-test-error-syntax:
+	@echo "Validating Error handling tests syntax..."
+	ansible-playbook --syntax-check ansible_tests/run_error_tests.yml
+
+# Validate all test playbooks syntax
+ansible-test-all-syntax:
+	@echo "Validating all test playbooks syntax..."
+	ansible-playbook --syntax-check ansible_tests/shellama_test_playbook.yml
 
 # Clean up
 clean:

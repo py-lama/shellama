@@ -174,6 +174,14 @@ make ansible-test-dir-direct    # Run only directory operations tests directly
 make ansible-test-shell-direct  # Run only shell operations tests directly
 make ansible-test-error-direct  # Run only error handling tests directly
 
+# Syntax validation targets (no services or virtual environment needed)
+make ansible-test-all-syntax    # Validate syntax for all test playbooks
+make ansible-test-git-syntax    # Validate Git operations tests syntax
+make ansible-test-file-syntax   # Validate File operations tests syntax
+make ansible-test-dir-syntax    # Validate Directory operations tests syntax
+make ansible-test-shell-syntax  # Validate Shell operations tests syntax
+make ansible-test-error-syntax  # Validate Error handling tests syntax
+
 # Run with additional options
 make ansible-test ANSIBLE_OPTS="--verbose --no-cleanup"
 
