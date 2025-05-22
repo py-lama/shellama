@@ -1,0 +1,50 @@
+version: '3'
+
+services:
+  shellama-mock-api:
+    build:
+      context: .
+      dockerfile: Dockerfile.ansible-test
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./ansible_tests:/app/ansible_tests
+      - ./mock_shellama_api.py:/app/mock_api/mock_shellama_api.py
+      - ./run_ansible_tests.sh:/app/run_ansible_tests.sh
+      - ./Makefile:/app/Makefile
+      - ./test-reports:/app/test-reports
+    environment:
+      - SHELLAMA_URL=http://localhost:5000
+      - CLEANUP_ENABLED=true
+      - GENERATE_REPORT=true
+    command: |
+      bash -c "cd /app/mock_api && python3 mock_shellama_api.py &
+               sleep 5 && 
+               cd /app && 
+               echo 'Mock SheLLama API is running on port 5000' && 
+               echo 'Ready to run Ansible tests' && 
+               tail -f /dev/null"
+
+  shellama-ansible-tests:
+    build:
+      context: .
+      dockerfile: Dockerfile.ansible-test
+    depends_on:
+      - shellama-mock-api
+    volumes:
+      - ./ansible_tests:/app/ansible_tests
+      - ./run_ansible_tests.sh:/app/run_ansible_tests.sh
+      - ./Makefile:/app/Makefile
+      - ./test-reports:/app/test-reports
+    environment:
+      - SHELLAMA_URL=http://shellama-mock-api:5000
+      - CLEANUP_ENABLED=true
+      - GENERATE_REPORT=true
+    command: |
+      bash -c "cd /app && 
+               sleep 10 && 
+               echo 'Running Ansible tests against mock SheLLama API' && 
+               make ansible-test"
+
+volumes:
+  test-reports:

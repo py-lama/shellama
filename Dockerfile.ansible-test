@@ -1,0 +1,71 @@
+FROM ubuntu:22.04
+
+# Prevent interactive prompts during installation
+ARG DEBIAN_FRONTEND=noninteractive
+
+# Install dependencies
+RUN apt-get update && apt-get install -y \
+    python3 \
+    python3-pip \
+    python3-venv \
+    git \
+    curl \
+    vim \
+    nano \
+    ansible \
+    make \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set up working directory
+WORKDIR /app
+
+# Create example markdown directory
+RUN mkdir -p /app/example_markdown
+
+# Create example markdown files
+RUN echo "# Test Markdown File 1\n\nThis is a test markdown file for SheLLama Ansible tests." > /app/example_markdown/test1.md \
+    && echo "# Test Markdown File 2\n\nThis is another test markdown file for SheLLama Ansible tests." > /app/example_markdown/test2.md \
+    && echo "# Git Operations\n\nThis file describes Git operations that can be tested with SheLLama." > /app/example_markdown/git_operations.md
+
+# Create example Git repository
+RUN mkdir -p /app/example_git \
+    && cd /app/example_git \
+    && git init \
+    && git config --global user.email "test@example.com" \
+    && git config --global user.name "Test User" \
+    && echo "# Example Git Repository\n\nThis is an example Git repository for testing SheLLama Ansible tests." > README.md \
+    && git add README.md \
+    && git commit -m "Initial commit" \
+    && git branch feature-branch \
+    && git checkout feature-branch \
+    && echo "# Feature Branch File\n\nThis file was created in the feature branch." > feature.md \
+    && git add feature.md \
+    && git commit -m "Add feature file" \
+    && git checkout main || git checkout master \
+    && echo "# Main Branch Update\n\nThis is an update to the main branch." >> README.md \
+    && git add README.md \
+    && git commit -m "Update README in main branch"
+
+# Copy SheLLama Ansible tests
+COPY ansible_tests /app/ansible_tests
+COPY run_ansible_tests.sh /app/
+COPY Makefile /app/
+
+# Make the script executable
+RUN chmod +x /app/run_ansible_tests.sh
+
+# Create a mock SheLLama API service
+RUN mkdir -p /app/mock_api
+COPY mock_shellama_api.py /app/mock_api/
+
+# Set environment variables
+ENV SHELLAMA_URL=http://localhost:5000
+ENV CLEANUP_ENABLED=true
+ENV GENERATE_REPORT=true
+
+# Expose port for mock API
+EXPOSE 5000
+
+# Default command
+CMD ["bash"]
