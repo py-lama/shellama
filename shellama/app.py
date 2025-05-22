@@ -11,31 +11,23 @@ functionality as a REST API for use by the APILama gateway.
 import os
 import sys
 import argparse
-import logging
 from pathlib import Path
 
-# Handle different ways the dotenv package might be installed
-try:
-    from dotenv import load_dotenv
-except ImportError:
-    try:
-        from python_dotenv import load_dotenv
-    except ImportError:
-        # If dotenv is not available, define a dummy function
-        def load_dotenv(path=None):
-            logging.warning("python-dotenv package not found, environment variables from .env will not be loaded")
-            pass
+# Import PyLogs components first to ensure environment variables are loaded
+from shellama.logging_config import init_logging, get_logger
+
+# Initialize logging before any other imports
+init_logging()
+
+# Get a logger for this module
+logger = get_logger('app')
 
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 
-# Load environment variables from .env file
-env_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), '.env')
-load_dotenv(env_path)
-
 # Import SheLLama modules
 from shellama import file_ops, dir_ops, shell, git_ops
-from shellama.logger import logger, init_app
+from shellama.logger import logger as shellama_logger
 
 
 def create_app(test_config=None):

@@ -4,37 +4,21 @@
 """
 SheLLama Logger
 
-This module provides logging functionality for the SheLLama service.
+This module provides logging functionality for the SheLLama service using PyLogs.
 """
 
 import os
-import logging
-from logging.handlers import RotatingFileHandler
+import sys
+from pathlib import Path
 
-# Create a logger
-logger = logging.getLogger('shellama')
-logger.setLevel(logging.INFO)
+# Import PyLogs components
+from shellama.logging_config import init_logging, get_logger
 
-# Create a formatter
-formatter = logging.Formatter(
-    '[%(asctime)s] [%(levelname)s] [%(name)s] - %(message)s'
-)
+# Initialize logging
+init_logging()
 
-# Create a console handler
-console_handler = logging.StreamHandler()
-console_handler.setFormatter(formatter)
-logger.addHandler(console_handler)
-
-# Create a file handler
-log_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'logs')
-os.makedirs(log_dir, exist_ok=True)
-file_handler = RotatingFileHandler(
-    os.path.join(log_dir, 'shellama.log'),
-    maxBytes=10485760,  # 10 MB
-    backupCount=10
-)
-file_handler.setFormatter(formatter)
-logger.addHandler(file_handler)
+# Get the main logger for ShellLama
+logger = get_logger('shellama')
 
 
 def log_file_operation(operation: str, filename: str = 'all_files', success: bool = True, error: str = None):
@@ -76,12 +60,8 @@ def init_app(app):
     Args:
         app (Flask): The Flask application to initialize the logger for.
     """
-    if not app.debug:
-        app.logger.setLevel(logging.INFO)
-        app.logger.addHandler(console_handler)
-        app.logger.addHandler(file_handler)
-    
-    # Log when the app starts
+    # PyLogs is already initialized in the module import
+    # Just log when the app starts
     logger.info(f"SheLLama API started on {app.config.get('HOST', '127.0.0.1')}:{app.config.get('PORT', 8082)}")
 
 
