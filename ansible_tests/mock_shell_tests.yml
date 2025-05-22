@@ -1,0 +1,131 @@
+---
+# Mock Shell Commands Tests
+# This playbook simulates shell command tests without requiring the actual services
+
+- name: Run Mock Shell Commands Tests
+  hosts: localhost
+  gather_facts: false
+  vars:
+    test_directory: "/tmp/shellama_test"
+    cleanup_enabled: "{{ lookup('env', 'CLEANUP_ENABLED') | default('true', true) }}"
+  
+  tasks:
+    - name: Create test directory if it doesn't exist
+      file:
+        path: "{{ test_directory }}"
+        state: directory
+        mode: '0755'
+
+    - name: Mock Simple Shell Command
+      debug:
+        msg: "Simulating simple shell command: ls -la"
+      register: simple_command_result
+
+    - name: Set mock response for simple shell command
+      set_fact:
+        simple_command_result:
+          json:
+            status: "success"
+            stdout: "total 8\ndrwxr-xr-x 2 user user 4096 May 22 10:30 .\ndrwxr-xr-x 3 user user 4096 May 22 10:30 ..\n"
+            stderr: ""
+            exit_code: 0
+
+    - name: Display Simple Command Result
+      debug:
+        var: simple_command_result.json
+
+    - name: Verify Simple Command Result
+      assert:
+        that:
+          - simple_command_result.json.status == "success"
+          - simple_command_result.json.exit_code == 0
+        fail_msg: "Simple command verification failed"
+        success_msg: "Simple command verification passed"
+
+    - name: Mock Command With Output
+      debug:
+        msg: "Simulating command with output: echo 'Hello, SheLLama!'"
+      register: echo_command_result
+
+    - name: Set mock response for echo command
+      set_fact:
+        echo_command_result:
+          json:
+            status: "success"
+            stdout: "Hello, SheLLama!"
+            stderr: ""
+            exit_code: 0
+
+    - name: Display Echo Command Result
+      debug:
+        var: echo_command_result.json
+
+    - name: Verify Echo Command Result
+      assert:
+        that:
+          - echo_command_result.json.status == "success"
+          - echo_command_result.json.stdout == "Hello, SheLLama!"
+          - echo_command_result.json.exit_code == 0
+        fail_msg: "Echo command verification failed"
+        success_msg: "Echo command verification passed"
+
+    - name: Mock Command With Error
+      debug:
+        msg: "Simulating command with error: cat /nonexistent/file"
+      register: error_command_result
+
+    - name: Set mock response for error command
+      set_fact:
+        error_command_result:
+          json:
+            status: "error"
+            stdout: ""
+            stderr: "cat: /nonexistent/file: No such file or directory"
+            exit_code: 1
+
+    - name: Display Error Command Result
+      debug:
+        var: error_command_result.json
+
+    - name: Verify Error Command Result
+      assert:
+        that:
+          - error_command_result.json.status == "error"
+          - error_command_result.json.exit_code != 0
+          - "'No such file or directory' in error_command_result.json.stderr"
+        fail_msg: "Error command verification failed"
+        success_msg: "Error command verification passed"
+
+    - name: Mock Command With Pipes
+      debug:
+        msg: "Simulating command with pipes: echo 'test' | grep 'test'"
+      register: pipe_command_result
+
+    - name: Set mock response for pipe command
+      set_fact:
+        pipe_command_result:
+          json:
+            status: "success"
+            stdout: "test"
+            stderr: ""
+            exit_code: 0
+
+    - name: Display Pipe Command Result
+      debug:
+        var: pipe_command_result.json
+
+    - name: Verify Pipe Command Result
+      assert:
+        that:
+          - pipe_command_result.json.status == "success"
+          - pipe_command_result.json.stdout == "test"
+          - pipe_command_result.json.exit_code == 0
+        fail_msg: "Pipe command verification failed"
+        success_msg: "Pipe command verification passed"
+
+    # Clean up
+    - name: Clean up test directory
+      file:
+        path: "{{ test_directory }}"
+        state: absent
+      when: cleanup_enabled | bool

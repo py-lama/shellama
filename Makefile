@@ -5,12 +5,24 @@ PORT ?= 8002
 HOST ?= 127.0.0.1
 
 # Python virtual environment
-VENV := venv
+# Use VENV_DIR environment variable to override the virtual environment location
+# Example: make setup VENV_DIR=~/.virtualenvs/shellama
+VENV_DIR ?= venv
+VENV := $(VENV_DIR)
 PYTHON := python3
 PIP := $(VENV)/bin/pip
 PYTEST := $(VENV)/bin/pytest
 BLACK := $(VENV)/bin/black
 FLAKE8 := $(VENV)/bin/flake8
+
+# Check if we can create the virtual environment
+CHECK_VENV := $(shell mkdir -p $(VENV_DIR) 2>/dev/null && echo 1 || echo 0)
+
+# Define colors for output
+RED := \033[0;31m
+GREEN := \033[0;32m
+YELLOW := \033[1;33m
+NC := \033[0m # No Color
 
 .PHONY: all setup venv clean test lint format run ansible-test
 
@@ -18,11 +30,23 @@ all: setup
 
 # Create virtual environment and install dependencies
 venv:
-	$(PYTHON) -m venv $(VENV)
+	@if [ "$(CHECK_VENV)" = "1" ]; then \
+		echo -e "$(GREEN)Creating virtual environment in $(VENV)...$(NC)"; \
+		$(PYTHON) -m venv $(VENV) || (echo -e "$(RED)Error creating virtual environment. Using direct commands instead.$(NC)" && exit 1); \
+		echo -e "$(GREEN)Virtual environment created successfully.$(NC)"; \
+	else \
+		echo -e "$(YELLOW)Warning: Cannot create virtual environment in $(VENV).$(NC)"; \
+		echo -e "$(YELLOW)Please specify a different location with VENV_DIR or use direct targets.$(NC)"; \
+		echo -e "$(YELLOW)Example: make setup VENV_DIR=~/.virtualenvs/shellama$(NC)"; \
+		echo -e "$(YELLOW)Or use direct targets: make ansible-test-direct, make ansible-test-git-mock$(NC)"; \
+		exit 1; \
+	fi
 
 setup: venv
-	$(PIP) install -e .
-	$(PIP) install -e ".[dev]"
+	@echo -e "$(GREEN)Installing dependencies...$(NC)"
+	@$(PIP) install -e . || (echo -e "$(RED)Error installing package. Try using direct targets.$(NC)" && exit 1)
+	@$(PIP) install -e ".[dev]" || echo -e "$(YELLOW)Warning: Dev dependencies not installed. Some features may not work.$(NC)"
+	@echo -e "$(GREEN)Setup completed successfully.$(NC)"
 
 # Run tests
 test: setup
@@ -129,14 +153,37 @@ ansible-test-all-syntax:
 	ansible-playbook --syntax-check ansible_tests/shellama_test_playbook.yml
 
 # Run mock tests that don't require actual services
+# These targets can be used without setting up a virtual environment
+
 ansible-test-git-mock:
-	@echo "Running mock Git operations tests (no services required)..."
+	@echo -e "$(GREEN)Running mock Git operations tests (no services required)...$(NC)"
 	ansible-playbook ansible_tests/mock_git_tests.yml $(ANSIBLE_OPTS)
 
+ansible-test-file-mock:
+	@echo -e "$(GREEN)Running mock File operations tests (no services required)...$(NC)"
+	ansible-playbook ansible_tests/mock_file_tests.yml $(ANSIBLE_OPTS)
+
+ansible-test-shell-mock:
+	@echo -e "$(GREEN)Running mock Shell operations tests (no services required)...$(NC)"
+	ansible-playbook ansible_tests/mock_shell_tests.yml $(ANSIBLE_OPTS)
+
+# Run all mock tests
+ansible-test-all-mock: ansible-test-git-mock ansible-test-file-mock ansible-test-shell-mock
+	@echo -e "$(GREEN)All mock tests completed successfully.$(NC)"
+
 # Verify test markdown directory
-verify-test-markdown:
-	@echo "Verifying test markdown directory structure..."
+verify-test-markdown: setup
+	@echo -e "$(GREEN)Verifying test markdown directory structure...$(NC)"
+	$(VENV)/bin/python test_markdown/verify_test_files.py
+
+# Verify test markdown directory without virtual environment
+verify-test-markdown-direct:
+	@echo -e "$(GREEN)Verifying test markdown directory structure (direct)...$(NC)"
 	python test_markdown/verify_test_files.py
+
+# Run all direct tests without virtual environment
+test-direct: ansible-test-all-mock verify-test-markdown-direct
+	@echo -e "$(GREEN)All direct tests completed successfully.$(NC)"
 
 # Clean up
 clean:

@@ -1,0 +1,146 @@
+---
+# Mock File Operations Tests
+# This playbook simulates file operations tests without requiring the actual services
+
+- name: Run Mock File Operations Tests
+  hosts: localhost
+  gather_facts: false
+  vars:
+    test_directory: "/tmp/shellama_test"
+    cleanup_enabled: "{{ lookup('env', 'CLEANUP_ENABLED') | default('true', true) }}"
+  
+  tasks:
+    - name: Create test directory if it doesn't exist
+      file:
+        path: "{{ test_directory }}"
+        state: directory
+        mode: '0755'
+
+    - name: Mock Create File
+      debug:
+        msg: "Simulating file creation: {{ test_directory }}/test.txt"
+      register: create_file_result
+
+    - name: Set mock response for file creation
+      set_fact:
+        create_file_result:
+          json:
+            status: "success"
+            message: "File created successfully"
+
+    - name: Display Create File Result
+      debug:
+        var: create_file_result.json
+
+    - name: Mock Read File
+      debug:
+        msg: "Simulating file reading: {{ test_directory }}/test.txt"
+      register: read_file_result
+
+    - name: Set mock response for file reading
+      set_fact:
+        read_file_result:
+          json:
+            status: "success"
+            content: "This is test content created by SheLLama API."
+
+    - name: Display Read File Result
+      debug:
+        var: read_file_result.json
+
+    - name: Verify File Content
+      assert:
+        that:
+          - read_file_result.json.status == "success"
+          - read_file_result.json.content is defined
+          - read_file_result.json.content | length > 0
+        fail_msg: "File content verification failed"
+        success_msg: "File content verification passed"
+
+    - name: Mock Update File
+      debug:
+        msg: "Simulating file update: {{ test_directory }}/test.txt"
+      register: update_file_result
+
+    - name: Set mock response for file update
+      set_fact:
+        update_file_result:
+          json:
+            status: "success"
+            message: "File updated successfully"
+
+    - name: Display Update File Result
+      debug:
+        var: update_file_result.json
+
+    - name: Mock Read Updated File
+      debug:
+        msg: "Simulating reading updated file: {{ test_directory }}/test.txt"
+      register: read_updated_file_result
+
+    - name: Set mock response for reading updated file
+      set_fact:
+        read_updated_file_result:
+          json:
+            status: "success"
+            content: "This is updated content in the test file."
+
+    - name: Display Read Updated File Result
+      debug:
+        var: read_updated_file_result.json
+
+    - name: Verify Updated File Content
+      assert:
+        that:
+          - read_updated_file_result.json.status == "success"
+          - read_updated_file_result.json.content is defined
+          - read_updated_file_result.json.content != read_file_result.json.content
+        fail_msg: "Updated file content verification failed"
+        success_msg: "Updated file content verification passed"
+
+    - name: Mock Delete File
+      debug:
+        msg: "Simulating file deletion: {{ test_directory }}/test.txt"
+      register: delete_file_result
+
+    - name: Set mock response for file deletion
+      set_fact:
+        delete_file_result:
+          json:
+            status: "success"
+            message: "File deleted successfully"
+
+    - name: Display Delete File Result
+      debug:
+        var: delete_file_result.json
+
+    - name: Mock Check If File Exists After Deletion
+      debug:
+        msg: "Simulating checking if file exists after deletion: {{ test_directory }}/test.txt"
+      register: file_exists_result
+
+    - name: Set mock response for file existence check
+      set_fact:
+        file_exists_result:
+          json:
+            status: "error"
+            message: "File not found"
+
+    - name: Display File Existence Check Result
+      debug:
+        var: file_exists_result.json
+
+    - name: Verify File Deletion
+      assert:
+        that:
+          - file_exists_result.json.status == "error"
+          - "'not found' in file_exists_result.json.message"
+        fail_msg: "File deletion verification failed"
+        success_msg: "File deletion verification passed"
+
+    # Clean up
+    - name: Clean up test directory
+      file:
+        path: "{{ test_directory }}"
+        state: absent
+      when: cleanup_enabled | bool
