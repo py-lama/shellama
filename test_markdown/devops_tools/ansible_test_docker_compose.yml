@@ -25,7 +25,7 @@ services:
     depends_on:
       - shellama-target
       - apilama-target
-    command: ["sleep", "infinity"]
+    command: "sleep infinity"
 
   # SheLLama Target - service being tested
   shellama-target:

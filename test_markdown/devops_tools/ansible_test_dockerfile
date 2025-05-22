@@ -47,7 +47,9 @@ RUN mkdir -p /app/ansible_tests/playbooks \
     /app/ansible_tests/inventory \
     /app/ansible_tests/roles \
     /app/ansible_tests/logs \
-    /app/ansible_tests/reports
+    /app/ansible_tests/reports \
+    /etc/ansible/logs \
+    /home/ansible/.ansible
 
 # Copy ansible configuration
 COPY ansible.cfg /etc/ansible/ansible.cfg
@@ -55,13 +57,15 @@ COPY ansible.cfg /etc/ansible/ansible.cfg
 # Create a non-root user for running tests
 RUN groupadd -r ansible && \
     useradd -r -g ansible ansible && \
-    chown -R ansible:ansible /app
+    chown -R ansible:ansible /app && \
+    chown -R ansible:ansible /etc/ansible/logs && \
+    chown -R ansible:ansible /home/ansible
 
 # Switch to non-root user
 USER ansible
 
 # Set the entrypoint
-ENTRYPOINT ["ansible-playbook"]
+ENTRYPOINT ["/bin/bash", "-c"]
 
 # Default command (can be overridden)
-CMD ["--version"]
+CMD ["sleep infinity"]
