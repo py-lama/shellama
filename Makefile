@@ -128,6 +128,11 @@ ansible-test-all-syntax:
 	@echo "Validating all test playbooks syntax..."
 	ansible-playbook --syntax-check ansible_tests/shellama_test_playbook.yml
 
+# Run mock tests that don't require actual services
+ansible-test-git-mock:
+	@echo "Running mock Git operations tests (no services required)..."
+	ansible-playbook ansible_tests/mock_git_tests.yml $(ANSIBLE_OPTS)
+
 # Clean up
 clean:
 	rm -rf $(VENV) *.egg-info build/ dist/ __pycache__/ .pytest_cache/ .coverage

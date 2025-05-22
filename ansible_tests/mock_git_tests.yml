@@ -1,0 +1,381 @@
+---
+# Mock Git Operations Tests
+# This playbook simulates Git operations tests without requiring the actual services
+
+- name: Run Mock Git Operations Tests
+  hosts: localhost
+  gather_facts: false
+  vars:
+    test_directory: "/tmp/shellama_test"
+    git_test_dir: "/tmp/shellama_git_test"
+    cleanup_enabled: "{{ lookup('env', 'CLEANUP_ENABLED') | default('true', true) }}"
+  
+  tasks:
+    - name: Create test directories if they don't exist
+      file:
+        path: "{{ item }}"
+        state: directory
+        mode: '0755'
+      with_items:
+        - "{{ test_directory }}"
+        - "{{ git_test_dir }}"
+
+    - name: Mock Git Initialize Repository
+      debug:
+        msg: "Simulating Git repository initialization in {{ git_test_dir }}"
+      register: git_init_result
+
+    - name: Set mock response for Git Init
+      set_fact:
+        git_init_result:
+          json:
+            status: "success"
+            message: "Git repository initialized successfully"
+
+    - name: Display Git Init Result
+      debug:
+        var: git_init_result.json
+
+    - name: Mock Create Test File in Git Repository
+      debug:
+        msg: "Simulating file creation: {{ git_test_dir }}/test.md"
+      register: create_git_file_result
+
+    - name: Set mock response for file creation
+      set_fact:
+        create_git_file_result:
+          json:
+            status: "success"
+            message: "File created successfully"
+
+    - name: Mock Git Status (Untracked Files)
+      debug:
+        msg: "Simulating Git status check for untracked files"
+      register: git_status_untracked_result
+
+    - name: Set mock response for Git Status (Untracked)
+      set_fact:
+        git_status_untracked_result:
+          json:
+            status: "success"
+            untracked: ["test.md"]
+            staged: []
+            modified: []
+
+    - name: Display Git Status (Untracked Files) Result
+      debug:
+        var: git_status_untracked_result.json
+
+    - name: Mock Git Add Files
+      debug:
+        msg: "Simulating Git add for test.md"
+      register: git_add_result
+
+    - name: Set mock response for Git Add
+      set_fact:
+        git_add_result:
+          json:
+            status: "success"
+            message: "Files added to staging area"
+
+    - name: Display Git Add Result
+      debug:
+        var: git_add_result.json
+
+    - name: Mock Git Status (Staged Files)
+      debug:
+        msg: "Simulating Git status check for staged files"
+      register: git_status_staged_result
+
+    - name: Set mock response for Git Status (Staged)
+      set_fact:
+        git_status_staged_result:
+          json:
+            status: "success"
+            untracked: []
+            staged: ["test.md"]
+            modified: []
+
+    - name: Display Git Status (Staged Files) Result
+      debug:
+        var: git_status_staged_result.json
+
+    - name: Mock Git Commit Changes
+      debug:
+        msg: "Simulating Git commit with message 'Initial commit'"
+      register: git_commit_result
+
+    - name: Set mock response for Git Commit
+      set_fact:
+        git_commit_result:
+          json:
+            status: "success"
+            message: "Changes committed successfully"
+            commit_hash: "abcdef1234567890"
+
+    - name: Display Git Commit Result
+      debug:
+        var: git_commit_result.json
+
+    - name: Mock Git History
+      debug:
+        msg: "Simulating Git history retrieval"
+      register: git_history_result
+
+    - name: Set mock response for Git History
+      set_fact:
+        git_history_result:
+          json:
+            status: "success"
+            history:
+              - hash: "abcdef1234567890"
+                author: "Ansible Test <ansible@test.com>"
+                date: "2025-05-22T10:00:00+02:00"
+                message: "Initial commit"
+
+    - name: Display Git History Result
+      debug:
+        var: git_history_result.json
+
+    - name: Mock File Modification
+      debug:
+        msg: "Simulating file modification: {{ git_test_dir }}/test.md"
+      register: modify_git_file_result
+
+    - name: Set mock response for file modification
+      set_fact:
+        modify_git_file_result:
+          json:
+            status: "success"
+            message: "File updated successfully"
+
+    - name: Mock Git Status (Modified Files)
+      debug:
+        msg: "Simulating Git status check for modified files"
+      register: git_status_modified_result
+
+    - name: Set mock response for Git Status (Modified)
+      set_fact:
+        git_status_modified_result:
+          json:
+            status: "success"
+            untracked: []
+            staged: []
+            modified: ["test.md"]
+
+    - name: Mock Git Add and Commit Modified File
+      debug:
+        msg: "Simulating Git add and commit for modified file"
+      register: git_commit_modified_result
+
+    - name: Set mock response for Git Add and Commit Modified
+      set_fact:
+        git_commit_modified_result:
+          json:
+            status: "success"
+            message: "Changes committed successfully"
+            commit_hash: "9876543210fedcba"
+
+    - name: Mock Updated Git History
+      debug:
+        msg: "Simulating updated Git history retrieval"
+      register: git_updated_history_result
+
+    - name: Set mock response for Updated Git History
+      set_fact:
+        git_updated_history_result:
+          json:
+            status: "success"
+            history:
+              - hash: "9876543210fedcba"
+                author: "Ansible Test <ansible@test.com>"
+                date: "2025-05-22T10:15:00+02:00"
+                message: "Update test file"
+              - hash: "abcdef1234567890"
+                author: "Ansible Test <ansible@test.com>"
+                date: "2025-05-22T10:00:00+02:00"
+                message: "Initial commit"
+
+    - name: Display Updated Git History Result
+      debug:
+        var: git_updated_history_result.json
+
+    - name: Verify Multiple Commits
+      assert:
+        that:
+          - git_updated_history_result.json.history | length >= 2
+        fail_msg: "Should have at least 2 commits in history"
+        success_msg: "Git history contains multiple commits as expected"
+
+    - name: Mock Git Branch Creation
+      debug:
+        msg: "Simulating Git branch creation: feature-branch"
+      register: git_create_branch_result
+
+    - name: Set mock response for Git Branch Creation
+      set_fact:
+        git_create_branch_result:
+          json:
+            status: "success"
+            message: "Branch 'feature-branch' created successfully"
+
+    - name: Display Create Branch Result
+      debug:
+        var: git_create_branch_result.json
+
+    - name: Mock Git List Branches
+      debug:
+        msg: "Simulating Git branch listing"
+      register: git_list_branches_result
+
+    - name: Set mock response for Git List Branches
+      set_fact:
+        git_list_branches_result:
+          json:
+            status: "success"
+            branches:
+              - name: "main"
+                current: true
+              - name: "feature-branch"
+                current: false
+
+    - name: Display List Branches Result
+      debug:
+        var: git_list_branches_result.json
+
+    - name: Verify Branch Creation
+      assert:
+        that:
+          - "'feature-branch' in git_list_branches_result.json.branches | map(attribute='name') | list"
+        fail_msg: "Feature branch was not created successfully"
+        success_msg: "Feature branch was created successfully"
+
+    - name: Mock Git Checkout Branch
+      debug:
+        msg: "Simulating Git checkout to feature-branch"
+      register: git_checkout_result
+
+    - name: Set mock response for Git Checkout
+      set_fact:
+        git_checkout_result:
+          json:
+            status: "success"
+            message: "Switched to branch 'feature-branch'"
+
+    - name: Display Checkout Result
+      debug:
+        var: git_checkout_result.json
+
+    - name: Mock Create Feature File
+      debug:
+        msg: "Simulating file creation in feature branch: {{ git_test_dir }}/feature.md"
+      register: create_feature_file_result
+
+    - name: Set mock response for feature file creation
+      set_fact:
+        create_feature_file_result:
+          json:
+            status: "success"
+            message: "File created successfully"
+
+    - name: Mock Git Add and Commit Feature File
+      debug:
+        msg: "Simulating Git add and commit for feature file"
+      register: git_commit_feature_result
+
+    - name: Set mock response for Git Add and Commit Feature
+      set_fact:
+        git_commit_feature_result:
+          json:
+            status: "success"
+            message: "Changes committed successfully"
+            commit_hash: "1122334455667788"
+
+    - name: Mock Git Checkout Main Branch
+      debug:
+        msg: "Simulating Git checkout to main branch"
+      register: git_checkout_main_result
+
+    - name: Set mock response for Git Checkout Main
+      set_fact:
+        git_checkout_main_result:
+          json:
+            status: "success"
+            message: "Switched to branch 'main'"
+
+    - name: Mock Git Merge Feature Branch
+      debug:
+        msg: "Simulating Git merge of feature-branch into main"
+      register: git_merge_result
+
+    - name: Set mock response for Git Merge
+      set_fact:
+        git_merge_result:
+          json:
+            status: "success"
+            message: "Merge successful"
+
+    - name: Display Merge Result
+      debug:
+        var: git_merge_result.json
+
+    - name: Mock Verify Feature File Exists
+      debug:
+        msg: "Simulating file verification after merge"
+      register: feature_file_result
+
+    - name: Set mock response for feature file verification
+      set_fact:
+        feature_file_result:
+          json:
+            status: "success"
+            content: "# Feature Branch File\n\nThis file was created in the feature branch."
+
+    - name: Mock Final Git History
+      debug:
+        msg: "Simulating final Git history retrieval after merge"
+      register: git_final_history_result
+
+    - name: Set mock response for Final Git History
+      set_fact:
+        git_final_history_result:
+          json:
+            status: "success"
+            history:
+              - hash: "aabbccddeeff0011"
+                author: "Ansible Test <ansible@test.com>"
+                date: "2025-05-22T10:30:00+02:00"
+                message: "Merge feature branch into main"
+              - hash: "1122334455667788"
+                author: "Ansible Test <ansible@test.com>"
+                date: "2025-05-22T10:25:00+02:00"
+                message: "Add feature file"
+              - hash: "9876543210fedcba"
+                author: "Ansible Test <ansible@test.com>"
+                date: "2025-05-22T10:15:00+02:00"
+                message: "Update test file"
+              - hash: "abcdef1234567890"
+                author: "Ansible Test <ansible@test.com>"
+                date: "2025-05-22T10:00:00+02:00"
+                message: "Initial commit"
+
+    - name: Display Final Git History Result
+      debug:
+        var: git_final_history_result.json
+
+    - name: Verify Merge Commit
+      assert:
+        that:
+          - "'Merge feature branch into main' in git_final_history_result.json.history | map(attribute='message') | list"
+        fail_msg: "Merge commit was not found in history"
+        success_msg: "Merge commit was successfully created"
+
+    # Cleanup
+    - name: Clean up test directories
+      file:
+        path: "{{ item }}"
+        state: absent
+      with_items:
+        - "{{ test_directory }}"
+        - "{{ git_test_dir }}"
+      when: cleanup_enabled | bool

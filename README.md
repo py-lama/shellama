@@ -182,6 +182,9 @@ make ansible-test-dir-syntax    # Validate Directory operations tests syntax
 make ansible-test-shell-syntax  # Validate Shell operations tests syntax
 make ansible-test-error-syntax  # Validate Error handling tests syntax
 
+# Mock test targets (no services or virtual environment needed)
+make ansible-test-git-mock     # Run Git operations tests with mocked responses
+
 # Run with additional options
 make ansible-test ANSIBLE_OPTS="--verbose --no-cleanup"
 
