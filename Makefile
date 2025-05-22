@@ -185,6 +185,48 @@ verify-test-markdown-direct:
 test-direct: ansible-test-all-mock verify-test-markdown-direct
 	@echo -e "$(GREEN)All direct tests completed successfully.$(NC)"
 
+# Poetry targets
+poetry-install:
+	@echo -e "$(GREEN)Installing dependencies with Poetry...$(NC)"
+	poetry install
+
+poetry-run:
+	@echo -e "$(GREEN)Running SheLLama with Poetry on port $(PORT)...$(NC)"
+	poetry run python -m shellama.app --port $(PORT) --host $(HOST)
+
+poetry-test:
+	@echo -e "$(GREEN)Running tests with Poetry...$(NC)"
+	poetry run pytest tests/
+
+poetry-lint:
+	@echo -e "$(GREEN)Linting code with Poetry...$(NC)"
+	poetry run flake8 shellama/ tests/
+
+poetry-format:
+	@echo -e "$(GREEN)Formatting code with Poetry...$(NC)"
+	poetry run black shellama/ tests/
+
+# Pipenv targets
+pipenv-install:
+	@echo -e "$(GREEN)Installing dependencies with Pipenv...$(NC)"
+	pipenv install --dev
+
+pipenv-run:
+	@echo -e "$(GREEN)Running SheLLama with Pipenv on port $(PORT)...$(NC)"
+	pipenv run python -m shellama.app --port $(PORT) --host $(HOST)
+
+pipenv-test:
+	@echo -e "$(GREEN)Running tests with Pipenv...$(NC)"
+	pipenv run pytest tests/
+
+pipenv-lint:
+	@echo -e "$(GREEN)Linting code with Pipenv...$(NC)"
+	pipenv run flake8 shellama/ tests/
+
+pipenv-format:
+	@echo -e "$(GREEN)Formatting code with Pipenv...$(NC)"
+	pipenv run black shellama/ tests/
+
 # Docker-based Ansible testing environment
 ansible-test-env-build:
 	@echo -e "$(GREEN)Building Ansible testing environment...$(NC)"
