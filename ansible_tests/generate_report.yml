@@ -1,0 +1,26 @@
+---
+# Generate a test report for SheLLama Ansible tests
+
+- name: Generate Test Report
+  hosts: localhost
+  gather_facts: false
+  vars:
+    report_file: "{{ lookup('env', 'REPORT_FILE') | default('shellama_test_report.html', true) }}"
+    test_results: "{{ hostvars['localhost'] }}"
+    timestamp: "{{ ansible_date_time.iso8601 }}"
+  
+  tasks:
+    - name: Get current date and time
+      command: date +"%Y-%m-%d %H:%M:%S"
+      register: current_datetime
+      changed_when: false
+
+    - name: Create HTML report
+      template:
+        src: report_template.html.j2
+        dest: "../ansible_tests/logs/{{ report_file }}"
+      delegate_to: localhost
+
+    - name: Display report location
+      debug:
+        msg: "Test report generated at ansible_tests/logs/{{ report_file }}"

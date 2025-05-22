@@ -1,0 +1,94 @@
+---
+# Directory Operations Tests
+# Tests all directory-related endpoints in SheLLama
+
+- name: Test Directory Operations - Get Directory Info
+  uri:
+    url: "{{ shellama_base_url }}/directory?path={{ test_directory }}"
+    method: GET
+    return_content: yes
+    status_code: 200
+  register: directory_info_result
+  failed_when: directory_info_result.json.status != "success"
+
+- name: Display Directory Info Result
+  debug:
+    var: directory_info_result.json
+
+- name: Test Directory Operations - Create Subdirectory
+  uri:
+    url: "{{ shellama_base_url }}/directory"
+    method: POST
+    body_format: json
+    body:
+      path: "{{ test_directory }}/subdirectory"
+    status_code: 200
+  register: create_dir_result
+  failed_when: create_dir_result.json.status != "success"
+
+- name: Display Create Directory Result
+  debug:
+    var: create_dir_result.json
+
+- name: Test Directory Operations - Verify Directory Creation
+  uri:
+    url: "{{ shellama_base_url }}/directory?path={{ test_directory }}/subdirectory"
+    method: GET
+    return_content: yes
+    status_code: 200
+  register: verify_dir_result
+  failed_when: verify_dir_result.json.status != "success"
+
+- name: Display Verify Directory Result
+  debug:
+    var: verify_dir_result.json
+
+- name: Test Directory Operations - Create Test File in Subdirectory
+  uri:
+    url: "{{ shellama_base_url }}/file"
+    method: POST
+    body_format: json
+    body:
+      filename: "{{ test_directory }}/subdirectory/test_file.txt"
+      content: "This is a test file in a subdirectory"
+    status_code: 200
+  register: create_subdir_file_result
+  failed_when: create_subdir_file_result.json.status != "success"
+
+- name: Test Directory Operations - List Files in Subdirectory
+  uri:
+    url: "{{ shellama_base_url }}/files?directory={{ test_directory }}/subdirectory"
+    method: GET
+    return_content: yes
+    status_code: 200
+  register: list_subdir_files_result
+  failed_when: list_subdir_files_result.json.status != "success"
+
+- name: Display List Subdirectory Files Result
+  debug:
+    var: list_subdir_files_result.json
+
+- name: Test Directory Operations - Delete Subdirectory
+  uri:
+    url: "{{ shellama_base_url }}/directory?path={{ test_directory }}/subdirectory"
+    method: DELETE
+    status_code: 200
+  register: delete_dir_result
+  failed_when: delete_dir_result.json.status != "success"
+
+- name: Display Delete Directory Result
+  debug:
+    var: delete_dir_result.json
+
+- name: Test Directory Operations - Error Handling (Get Non-existent Directory)
+  uri:
+    url: "{{ shellama_base_url }}/directory?path={{ test_directory }}/nonexistent"
+    method: GET
+    return_content: yes
+    status_code: [404, 500]
+  register: nonexistent_dir_result
+  failed_when: nonexistent_dir_result.status == 200
+
+- name: Display Non-existent Directory Error Result
+  debug:
+    var: nonexistent_dir_result

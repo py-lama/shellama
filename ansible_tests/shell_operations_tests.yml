@@ -1,0 +1,115 @@
+---
+# Shell Operations Tests
+# Tests all shell-related endpoints in SheLLama
+
+- name: Test Shell Operations - Execute Echo Command
+  uri:
+    url: "{{ shellama_base_url }}/shell"
+    method: POST
+    body_format: json
+    body:
+      command: "echo 'Hello from SheLLama Ansible test'"
+      cwd: "{{ test_directory }}"
+    status_code: 200
+  register: echo_result
+  failed_when: echo_result.json.status != "success"
+
+- name: Display Echo Command Result
+  debug:
+    var: echo_result.json
+
+- name: Verify Echo Command Output
+  assert:
+    that:
+      - "'Hello from SheLLama Ansible test' in echo_result.json.output"
+    fail_msg: "Echo command output does not contain expected text"
+    success_msg: "Echo command output contains expected text"
+
+- name: Test Shell Operations - Execute Command with Environment Variables
+  uri:
+    url: "{{ shellama_base_url }}/shell"
+    method: POST
+    body_format: json
+    body:
+      command: "echo $TEST_VAR"
+      cwd: "{{ test_directory }}"
+      env:
+        TEST_VAR: "SheLLama environment variable test"
+    status_code: 200
+  register: env_var_result
+  failed_when: env_var_result.json.status != "success"
+
+- name: Display Environment Variable Command Result
+  debug:
+    var: env_var_result.json
+
+- name: Verify Environment Variable Command Output
+  assert:
+    that:
+      - "'SheLLama environment variable test' in env_var_result.json.output"
+    fail_msg: "Environment variable command output does not contain expected text"
+    success_msg: "Environment variable command output contains expected text"
+
+- name: Test Shell Operations - Execute Command with Timeout
+  uri:
+    url: "{{ shellama_base_url }}/shell"
+    method: POST
+    body_format: json
+    body:
+      command: "sleep 1 && echo 'Command completed after delay'"
+      cwd: "{{ test_directory }}"
+      timeout: 2
+    status_code: 200
+  register: timeout_result
+  failed_when: timeout_result.json.status != "success"
+
+- name: Display Timeout Command Result
+  debug:
+    var: timeout_result.json
+
+- name: Test Shell Operations - Execute Command with Error
+  uri:
+    url: "{{ shellama_base_url }}/shell"
+    method: POST
+    body_format: json
+    body:
+      command: "cat /nonexistent/file"
+      cwd: "{{ test_directory }}"
+    status_code: 200
+  register: error_result
+  failed_when: error_result.json.status != "success" or error_result.json.exit_code == 0
+
+- name: Display Error Command Result
+  debug:
+    var: error_result.json
+
+- name: Verify Error Command Has Non-zero Exit Code
+  assert:
+    that:
+      - error_result.json.exit_code != 0
+      - error_result.json.error != ""
+    fail_msg: "Error command should have non-zero exit code and error message"
+    success_msg: "Error command has non-zero exit code and error message as expected"
+
+- name: Test Shell Operations - Execute Multiple Commands
+  uri:
+    url: "{{ shellama_base_url }}/shell"
+    method: POST
+    body_format: json
+    body:
+      command: "mkdir -p {{ test_directory }}/multi && cd {{ test_directory }}/multi && echo 'test' > test.txt && ls -la"
+      cwd: "{{ test_directory }}"
+    status_code: 200
+  register: multi_cmd_result
+  failed_when: multi_cmd_result.json.status != "success"
+
+- name: Display Multiple Commands Result
+  debug:
+    var: multi_cmd_result.json
+
+- name: Verify Multiple Commands Output
+  assert:
+    that:
+      - "'test.txt' in multi_cmd_result.json.output"
+    fail_msg: "Multiple commands output does not contain expected text"
+    success_msg: "Multiple commands output contains expected text"

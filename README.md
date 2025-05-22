@@ -145,6 +145,52 @@ python -m pytest tests/test_file_ops.py
 python -m pytest --cov=shellama tests/
 ```
 
+### Ansible Integration Tests
+
+SheLLama includes a comprehensive suite of Ansible tests that verify the functionality of all API endpoints. These tests ensure that the service works correctly and can be integrated with other systems.
+
+```bash
+# Run all Ansible tests
+make ansible-test
+
+# Or run the test script directly
+./run_ansible_tests.sh
+```
+
+The Ansible tests cover:
+- File operations (create, read, update, delete)
+- Directory operations (create, list, delete)
+- Shell command execution
+- Git operations (comprehensive):
+  - Repository initialization
+  - Status checking
+  - Adding and committing files
+  - Branch creation and checkout
+  - Merging branches
+  - Viewing commit history
+- Health check endpoints
+
+#### Testing through APILama Gateway
+
+The Ansible tests are designed to test SheLLama through the APILama gateway, which is the recommended way to access SheLLama in production. The APILama gateway adds the `/api/shellama` prefix to all SheLLama endpoints.
+
+To run the tests, both the APILama gateway and SheLLama service must be running:
+
+```bash
+# In one terminal, start the APILama gateway
+cd ../apilama
+make run
+
+# In another terminal, start the SheLLama service
+cd ../shellama
+make run
+
+# Then run the tests
+make ansible-test
+```
+
+Test results are logged to `ansible_tests/logs/` for debugging and auditing purposes.
+
 ### Code Quality
 
 ```bash

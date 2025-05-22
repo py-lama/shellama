@@ -12,7 +12,7 @@ PYTEST := $(VENV)/bin/pytest
 BLACK := $(VENV)/bin/black
 FLAKE8 := $(VENV)/bin/flake8
 
-.PHONY: all setup venv clean test lint format run
+.PHONY: all setup venv clean test lint format run ansible-test
 
 all: setup
 
@@ -44,6 +44,11 @@ cli: setup
 run: setup
 	$(VENV)/bin/python -m shellama.app --port $(PORT) --host $(HOST)
 
+# Run Ansible tests
+ansible-test: setup
+	./run_ansible_tests.sh
+
 # Clean up
 clean:
 	rm -rf $(VENV) *.egg-info build/ dist/ __pycache__/ .pytest_cache/ .coverage
+	rm -rf ansible_tests/logs/*

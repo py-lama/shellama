@@ -1,0 +1,303 @@
+---
+# Git Operations Tests
+# Tests all git-related endpoints in SheLLama
+
+- name: Test Git Operations - Initialize Repository
+  uri:
+    url: "{{ shellama_base_url }}/git/init"
+    method: POST
+    body_format: json
+    body:
+      path: "{{ git_test_dir }}"
+    status_code: 200
+  register: git_init_result
+  failed_when: git_init_result.json.status != "success"
+
+- name: Display Git Init Result
+  debug:
+    var: git_init_result.json
+
+- name: Create Test File in Git Repository
+  uri:
+    url: "{{ shellama_base_url }}/file"
+    method: POST
+    body_format: json
+    body:
+      filename: "{{ git_test_dir }}/test.md"
+      content: "# Git Test File\n\nThis is a test file for Git operations."
+    status_code: 200
+  register: create_git_file_result
+
+- name: Test Git Operations - Get Status (Untracked Files)
+  uri:
+    url: "{{ shellama_base_url }}/git/status"
+    method: GET
+    return_content: yes
+    params:
+      path: "{{ git_test_dir }}"
+    status_code: 200
+  register: git_status_untracked_result
+  failed_when: git_status_untracked_result.json.status != "success"
+
+- name: Display Git Status (Untracked Files) Result
+  debug:
+    var: git_status_untracked_result.json
+
+- name: Test Git Operations - Add Files
+  uri:
+    url: "{{ shellama_base_url }}/git/add"
+    method: POST
+    body_format: json
+    body:
+      path: "{{ git_test_dir }}"
+      files: ["test.md"]
+    status_code: 200
+  register: git_add_result
+  failed_when: git_add_result.json.status != "success"
+
+- name: Display Git Add Result
+  debug:
+    var: git_add_result.json
+
+- name: Test Git Operations - Get Status (Staged Files)
+  uri:
+    url: "{{ shellama_base_url }}/git/status"
+    method: GET
+    return_content: yes
+    params:
+      path: "{{ git_test_dir }}"
+    status_code: 200
+  register: git_status_staged_result
+  failed_when: git_status_staged_result.json.status != "success"
+
+- name: Display Git Status (Staged Files) Result
+  debug:
+    var: git_status_staged_result.json
+
+- name: Test Git Operations - Commit Changes
+  uri:
+    url: "{{ shellama_base_url }}/git/commit"
+    method: POST
+    body_format: json
+    body:
+      path: "{{ git_test_dir }}"
+      message: "Initial commit"
+      author_name: "Ansible Test"
+      author_email: "ansible@test.com"
+    status_code: 200
+  register: git_commit_result
+  failed_when: git_commit_result.json.status != "success"
+
+- name: Display Git Commit Result
+  debug:
+    var: git_commit_result.json
+
+- name: Test Git Operations - Get Commit History
+  uri:
+    url: "{{ shellama_base_url }}/git/history"
+    method: GET
+    return_content: yes
+    params:
+      path: "{{ git_test_dir }}"
+      max_count: 5
+    status_code: 200
+  register: git_history_result
+  failed_when: git_history_result.json.status != "success"
+
+- name: Display Git History Result
+  debug:
+    var: git_history_result.json
+
+- name: Modify Test File in Git Repository
+  uri:
+    url: "{{ shellama_base_url }}/file"
+    method: POST
+    body_format: json
+    body:
+      filename: "{{ git_test_dir }}/test.md"
+      content: "# Git Test File\n\nThis is a test file for Git operations.\n\nThis line was added in a second commit."
+    status_code: 200
+  register: modify_git_file_result
+
+- name: Test Git Operations - Add and Commit Modified File
+  uri:
+    url: "{{ shellama_base_url }}/git/commit"
+    method: POST
+    body_format: json
+    body:
+      path: "{{ git_test_dir }}"
+      message: "Update test file"
+      author_name: "Ansible Test"
+      author_email: "ansible@test.com"
+      add_all: true
+    status_code: 200
+  register: git_commit_modified_result
+  failed_when: git_commit_modified_result.json.status != "success"
+
+- name: Test Git Operations - Get Updated Commit History
+  uri:
+    url: "{{ shellama_base_url }}/git/history"
+    method: GET
+    return_content: yes
+    params:
+      path: "{{ git_test_dir }}"
+      max_count: 5
+    status_code: 200
+  register: git_updated_history_result
+  failed_when: git_updated_history_result.json.status != "success"
+
+- name: Display Updated Git History Result
+  debug:
+    var: git_updated_history_result.json
+
+- name: Verify Multiple Commits
+  assert:
+    that:
+      - git_updated_history_result.json.history | length >= 2
+    fail_msg: "Should have at least 2 commits in history"
+    success_msg: "Git history contains multiple commits as expected"
+
+- name: Test Git Operations - Create Branch
+  uri:
+    url: "{{ shellama_base_url }}/git/branch"
+    method: POST
+    body_format: json
+    body:
+      path: "{{ git_test_dir }}"
+      name: "feature-branch"
+    status_code: 200
+  register: git_create_branch_result
+  failed_when: git_create_branch_result.json.status != "success"
+
+- name: Display Create Branch Result
+  debug:
+    var: git_create_branch_result.json
+
+- name: Test Git Operations - List Branches
+  uri:
+    url: "{{ shellama_base_url }}/git/branches"
+    method: GET
+    return_content: yes
+    params:
+      path: "{{ git_test_dir }}"
+    status_code: 200
+  register: git_list_branches_result
+  failed_when: git_list_branches_result.json.status != "success"
+
+- name: Display List Branches Result
+  debug:
+    var: git_list_branches_result.json
+
+- name: Verify Branch Creation
+  assert:
+    that:
+      - "'feature-branch' in git_list_branches_result.json.branches | map(attribute='name') | list"
+    fail_msg: "Feature branch was not created successfully"
+    success_msg: "Feature branch was created successfully"
+
+- name: Test Git Operations - Checkout Branch
+  uri:
+    url: "{{ shellama_base_url }}/git/checkout"
+    method: POST
+    body_format: json
+    body:
+      path: "{{ git_test_dir }}"
+      branch: "feature-branch"
+    status_code: 200
+  register: git_checkout_result
+  failed_when: git_checkout_result.json.status != "success"
+
+- name: Display Checkout Result
+  debug:
+    var: git_checkout_result.json
+
+- name: Create Test File in Feature Branch
+  uri:
+    url: "{{ shellama_base_url }}/file"
+    method: POST
+    body_format: json
+    body:
+      filename: "{{ git_test_dir }}/feature.md"
+      content: "# Feature Branch File
+
+This file was created in the feature branch."
+    status_code: 200
+  register: create_feature_file_result
+
+- name: Test Git Operations - Add and Commit Feature File
+  uri:
+    url: "{{ shellama_base_url }}/git/commit"
+    method: POST
+    body_format: json
+    body:
+      path: "{{ git_test_dir }}"
+      message: "Add feature file"
+      author_name: "Ansible Test"
+      author_email: "ansible@test.com"
+      add_all: true
+    status_code: 200
+  register: git_commit_feature_result
+  failed_when: git_commit_feature_result.json.status != "success"
+
+- name: Test Git Operations - Checkout Main Branch
+  uri:
+    url: "{{ shellama_base_url }}/git/checkout"
+    method: POST
+    body_format: json
+    body:
+      path: "{{ git_test_dir }}"
+      branch: "main"
+    status_code: 200
+  register: git_checkout_main_result
+  failed_when: git_checkout_main_result.json.status != "success"
+
+- name: Test Git Operations - Merge Feature Branch
+  uri:
+    url: "{{ shellama_base_url }}/git/merge"
+    method: POST
+    body_format: json
+    body:
+      path: "{{ git_test_dir }}"
+      branch: "feature-branch"
+      message: "Merge feature branch into main"
+    status_code: 200
+  register: git_merge_result
+  failed_when: git_merge_result.json.status != "success"
+
+- name: Display Merge Result
+  debug:
+    var: git_merge_result.json
+
+- name: Verify Feature File Exists in Main Branch
+  uri:
+    url: "{{ shellama_base_url }}/file"
+    method: GET
+    return_content: yes
+    params:
+      filename: "{{ git_test_dir }}/feature.md"
+    status_code: 200
+  register: feature_file_result
+  failed_when: feature_file_result.json.status != "success"
+
+- name: Test Git Operations - Get Final Commit History
+  uri:
+    url: "{{ shellama_base_url }}/git/history"
+    method: GET
+    return_content: yes
+    params:
+      path: "{{ git_test_dir }}"
+      max_count: 10
+    status_code: 200
+  register: git_final_history_result
+  failed_when: git_final_history_result.json.status != "success"
+
+- name: Display Final Git History Result
+  debug:
+    var: git_final_history_result.json
+
+- name: Verify Merge Commit
+  assert:
+    that:
+      - "'Merge feature branch into main' in git_final_history_result.json.history | map(attribute='message') | list"
+    fail_msg: "Merge commit was not found in history"
+    success_msg: "Merge commit was successfully created"
