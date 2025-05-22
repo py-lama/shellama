@@ -15,6 +15,8 @@ NC="\033[0m" # No Color
 CLEANUP=true
 GENERATE_REPORT=true
 VERBOSE=""
+SKIP_HEALTH_CHECK=false
+DRY_RUN=false
 
 # Parse command line arguments
 while [[ $# -gt 0 ]]; do
@@ -35,11 +37,21 @@ while [[ $# -gt 0 ]]; do
             VERBOSE="-vv"
             shift
             ;;
+        --skip-health-check)
+            SKIP_HEALTH_CHECK=true
+            shift
+            ;;
+        --dry-run)
+            DRY_RUN=true
+            shift
+            ;;
         -h|--help)
             echo "Usage: $0 [options]"
             echo "Options:"
             echo "  --no-cleanup       Don't clean up test directories after tests"
             echo "  --no-report        Don't generate HTML test report"
+            echo "  --skip-health-check Skip checking if APILama and SheLLama are running"
+            echo "  --dry-run          Only validate the playbook syntax without running it"
             echo "  -v, --verbose      Show verbose output"
             echo "  -vv, --very-verbose Show very verbose output"
             echo "  -h, --help         Show this help message"
@@ -55,16 +67,21 @@ done
 echo -e "${YELLOW}=== SheLLama Ansible Test Runner ===${NC}"
 
 # Check if APILama gateway is running and SheLLama service is accessible
-echo -e "${YELLOW}Checking if APILama gateway is running and SheLLama service is accessible...${NC}"
-if ! curl -s http://localhost:5000/api/shellama/health > /dev/null; then
-    echo -e "${RED}ERROR: APILama gateway is not running or SheLLama service is not accessible!${NC}"
-    echo -e "${YELLOW}Please start the APILama gateway and SheLLama service with:${NC}"
-    echo -e "cd .. && make run-apilama
+if [ "$SKIP_HEALTH_CHECK" = "false" ]; then
+    echo -e "${YELLOW}Checking if APILama gateway is running and SheLLama service is accessible...${NC}"
+    if ! curl -s http://localhost:5000/api/shellama/health > /dev/null; then
+        echo -e "${RED}ERROR: APILama gateway is not running or SheLLama service is not accessible!${NC}"
+        echo -e "${YELLOW}Please start the APILama gateway and SheLLama service with:${NC}"
+        echo -e "cd .. && make run-apilama
 cd .. && make run-shellama\n"
-    exit 1
+        echo -e "${YELLOW}Or run with --skip-health-check to bypass this check for development purposes.${NC}"
+        exit 1
+    fi
+    echo -e "${GREEN}SheLLama service is running.${NC}"
+else
+    echo -e "${YELLOW}Skipping health check as requested.${NC}"
+    echo -e "${YELLOW}Note: Tests may fail if services are not actually running.${NC}"
 fi
-
-echo -e "${GREEN}SheLLama service is running.${NC}"
 
 # Create test directory if it doesn't exist
 mkdir -p ansible_tests/logs
@@ -77,10 +94,22 @@ export REPORT_FILE="shellama_test_$(date +%Y%m%d_%H%M%S).html"
 
 # Run the Ansible playbook
 echo -e "${YELLOW}Running Ansible tests...${NC}"
-ansible-playbook $VERBOSE ansible_tests/shellama_test_playbook.yml -e "cleanup_enabled=$CLEANUP generate_report=$GENERATE_REPORT" | tee ansible_tests/logs/shellama_test_$(date +%Y%m%d_%H%M%S).log
+
+if [ "$DRY_RUN" = "true" ]; then
+    echo -e "${BLUE}Dry run mode: Only validating playbook syntax${NC}"
+    ansible-playbook $VERBOSE --syntax-check ansible_tests/shellama_test_playbook.yml
+    RESULT=$?
+    if [ $RESULT -eq 0 ]; then
+        echo -e "${GREEN}Playbook syntax is valid.${NC}"
+    else
+        echo -e "${RED}Playbook syntax is invalid.${NC}"
+    fi
+else
+    ansible-playbook $VERBOSE ansible_tests/shellama_test_playbook.yml -e "cleanup_enabled=$CLEANUP generate_report=$GENERATE_REPORT" | tee ansible_tests/logs/shellama_test_$(date +%Y%m%d_%H%M%S).log
+    RESULT=$?
+fi
 
 # Check if tests passed
-RESULT=$?
 if [ $RESULT -eq 0 ]; then
     echo -e "${GREEN}All SheLLama Ansible tests passed successfully!${NC}"
     if [ "$GENERATE_REPORT" = "true" ]; then

@@ -150,8 +150,17 @@ python -m pytest --cov=shellama tests/
 SheLLama includes a comprehensive suite of Ansible tests that verify the functionality of all API endpoints. These tests ensure that the service works correctly and can be integrated with other systems.
 
 ```bash
-# Run all Ansible tests
+# Run all Ansible tests (requires APILama and SheLLama to be running)
 make ansible-test
+
+# Run tests in development mode (skips service health check)
+make ansible-test-dev
+
+# Validate test syntax without running tests
+make ansible-test-dry-run
+
+# Run with additional options
+make ansible-test ANSIBLE_OPTS="--verbose --no-cleanup"
 
 # Or run the test script directly with options
 ./run_ansible_tests.sh
@@ -164,6 +173,9 @@ make ansible-test
 
 # Run without generating HTML report
 ./run_ansible_tests.sh --no-report
+
+# Skip the health check (for development/testing)
+./run_ansible_tests.sh --skip-health-check
 
 # Show help
 ./run_ansible_tests.sh --help

@@ -46,7 +46,15 @@ run: setup
 
 # Run Ansible tests
 ansible-test: setup
-	./run_ansible_tests.sh
+	./run_ansible_tests.sh $(ANSIBLE_OPTS)
+
+# Run Ansible tests without health check (for development)
+ansible-test-dev: setup
+	./run_ansible_tests.sh --skip-health-check $(ANSIBLE_OPTS)
+
+# Validate Ansible test syntax without running tests
+ansible-test-dry-run:
+	./run_ansible_tests.sh --dry-run $(ANSIBLE_OPTS)
 
 # Clean up
 clean:
