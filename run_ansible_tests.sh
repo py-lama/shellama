@@ -17,6 +17,7 @@ GENERATE_REPORT=true
 VERBOSE=""
 SKIP_HEALTH_CHECK=false
 DRY_RUN=false
+TEST_FILE="ansible_tests/shellama_test_playbook.yml"
 
 # Parse command line arguments
 while [[ $# -gt 0 ]]; do
@@ -45,6 +46,10 @@ while [[ $# -gt 0 ]]; do
             DRY_RUN=true
             shift
             ;;
+        --test-file=*)
+            TEST_FILE="ansible_tests/${1#*=}"
+            shift
+            ;;
         -h|--help)
             echo "Usage: $0 [options]"
             echo "Options:"
@@ -52,6 +57,8 @@ while [[ $# -gt 0 ]]; do
             echo "  --no-report        Don't generate HTML test report"
             echo "  --skip-health-check Skip checking if APILama and SheLLama are running"
             echo "  --dry-run          Only validate the playbook syntax without running it"
+            echo "  --test-file=FILE   Run a specific test file instead of the full suite"
+            echo "                     (e.g., --test-file=git_operations_tests.yml)"
             echo "  -v, --verbose      Show verbose output"
             echo "  -vv, --very-verbose Show very verbose output"
             echo "  -h, --help         Show this help message"
@@ -97,7 +104,8 @@ echo -e "${YELLOW}Running Ansible tests...${NC}"
 
 if [ "$DRY_RUN" = "true" ]; then
     echo -e "${BLUE}Dry run mode: Only validating playbook syntax${NC}"
-    ansible-playbook $VERBOSE --syntax-check ansible_tests/shellama_test_playbook.yml
+    echo -e "${BLUE}Testing file: $TEST_FILE${NC}"
+    ansible-playbook $VERBOSE --syntax-check $TEST_FILE
     RESULT=$?
     if [ $RESULT -eq 0 ]; then
         echo -e "${GREEN}Playbook syntax is valid.${NC}"
@@ -105,14 +113,15 @@ if [ "$DRY_RUN" = "true" ]; then
         echo -e "${RED}Playbook syntax is invalid.${NC}"
     fi
 else
-    ansible-playbook $VERBOSE ansible_tests/shellama_test_playbook.yml -e "cleanup_enabled=$CLEANUP generate_report=$GENERATE_REPORT" | tee ansible_tests/logs/shellama_test_$(date +%Y%m%d_%H%M%S).log
+    echo -e "${BLUE}Testing file: $TEST_FILE${NC}"
+    ansible-playbook $VERBOSE $TEST_FILE -e "cleanup_enabled=$CLEANUP generate_report=$GENERATE_REPORT" | tee ansible_tests/logs/shellama_test_$(date +%Y%m%d_%H%M%S).log
     RESULT=$?
 fi
 
 # Check if tests passed
 if [ $RESULT -eq 0 ]; then
     echo -e "${GREEN}All SheLLama Ansible tests passed successfully!${NC}"
-    if [ "$GENERATE_REPORT" = "true" ]; then
+    if [ "$GENERATE_REPORT" = "true" ] && [ "$DRY_RUN" = "false" ]; then
         REPORT_PATH="ansible_tests/logs/$REPORT_FILE"
         if [ -f "$REPORT_PATH" ]; then
             echo -e "${BLUE}Test report generated: $REPORT_PATH${NC}"
@@ -120,12 +129,17 @@ if [ $RESULT -eq 0 ]; then
     fi
     exit 0
 else
-    echo -e "${RED}Some SheLLama Ansible tests failed. Check the logs for details.${NC}"
-    if [ "$GENERATE_REPORT" = "true" ]; then
-        REPORT_PATH="ansible_tests/logs/$REPORT_FILE"
-        if [ -f "$REPORT_PATH" ]; then
-            echo -e "${BLUE}Test report generated: $REPORT_PATH${NC}"
+    if [ "$DRY_RUN" = "true" ]; then
+        # For dry run, we've already printed the appropriate message
+        exit $RESULT
+    else
+        echo -e "${RED}Some SheLLama Ansible tests failed. Check the logs for details.${NC}"
+        if [ "$GENERATE_REPORT" = "true" ]; then
+            REPORT_PATH="ansible_tests/logs/$REPORT_FILE"
+            if [ -f "$REPORT_PATH" ]; then
+                echo -e "${BLUE}Test report generated: $REPORT_PATH${NC}"
+            fi
         fi
+        exit 1
     fi
-    exit 1
 fi

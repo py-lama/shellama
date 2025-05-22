@@ -1,0 +1,38 @@
+---
+# Wrapper playbook for running Git operations tests
+
+- name: Run Git Operations Tests
+  hosts: localhost
+  gather_facts: false
+  vars:
+    shellama_base_url: "{{ lookup('env', 'SHELLAMA_URL') | default('http://localhost:5000/api/shellama', true) }}"
+    test_directory: "/tmp/shellama_test"
+    test_file: "/tmp/shellama_test/test_file.txt"
+    test_content: "This is a test file created by Ansible"
+    git_test_dir: "/tmp/shellama_git_test"
+    cleanup_enabled: "{{ lookup('env', 'CLEANUP_ENABLED') | default('true', true) }}"
+    generate_report: "{{ lookup('env', 'GENERATE_REPORT') | default('true', true) }}"
+  
+  tasks:
+    - name: Create test directories if they don't exist
+      file:
+        path: "{{ item }}"
+        state: directory
+        mode: '0755'
+      with_items:
+        - "{{ test_directory }}"
+        - "{{ git_test_dir }}"
+
+    # Include Git Operations Tests
+    - name: Include Git Operations Tests
+      include_tasks: git_operations_tests.yml
+
+    # Cleanup
+    - name: Clean up test directories
+      file:
+        path: "{{ item }}"
+        state: absent
+      with_items:
+        - "{{ test_directory }}"
+        - "{{ git_test_dir }}"
+      when: cleanup_enabled | bool

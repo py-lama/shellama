@@ -48,13 +48,38 @@ run: setup
 ansible-test: setup
 	./run_ansible_tests.sh $(ANSIBLE_OPTS)
 
+# Run Ansible tests without the virtual environment setup
+ansible-test-only:
+	./run_ansible_tests.sh $(ANSIBLE_OPTS)
+
+# Run Ansible tests directly without any setup
+ansible-test-direct:
+	@echo "Running Ansible tests directly without virtual environment..."
+	ansible-playbook ansible_tests/shellama_test_playbook.yml $(ANSIBLE_OPTS)
+
 # Run Ansible tests without health check (for development)
-ansible-test-dev: setup
+ansible-test-dev:
 	./run_ansible_tests.sh --skip-health-check $(ANSIBLE_OPTS)
 
 # Validate Ansible test syntax without running tests
 ansible-test-dry-run:
 	./run_ansible_tests.sh --dry-run $(ANSIBLE_OPTS)
+
+# Run specific test files
+ansible-test-git:
+	./run_ansible_tests.sh --test-file=run_git_tests.yml --skip-health-check $(ANSIBLE_OPTS)
+
+ansible-test-file:
+	./run_ansible_tests.sh --test-file=run_file_tests.yml --skip-health-check $(ANSIBLE_OPTS)
+
+ansible-test-dir:
+	./run_ansible_tests.sh --test-file=run_dir_tests.yml --skip-health-check $(ANSIBLE_OPTS)
+
+ansible-test-shell:
+	./run_ansible_tests.sh --test-file=run_shell_tests.yml --skip-health-check $(ANSIBLE_OPTS)
+
+ansible-test-error:
+	./run_ansible_tests.sh --test-file=run_error_tests.yml --skip-health-check $(ANSIBLE_OPTS)
 
 # Clean up
 clean:

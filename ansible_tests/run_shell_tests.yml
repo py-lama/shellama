@@ -1,0 +1,29 @@
+---
+# Wrapper playbook for running Shell operations tests
+
+- name: Run Shell Operations Tests
+  hosts: localhost
+  gather_facts: false
+  vars:
+    shellama_base_url: "{{ lookup('env', 'SHELLAMA_URL') | default('http://localhost:5000/api/shellama', true) }}"
+    test_directory: "/tmp/shellama_test"
+    cleanup_enabled: "{{ lookup('env', 'CLEANUP_ENABLED') | default('true', true) }}"
+    generate_report: "{{ lookup('env', 'GENERATE_REPORT') | default('true', true) }}"
+  
+  tasks:
+    - name: Create test directories if they don't exist
+      file:
+        path: "{{ test_directory }}"
+        state: directory
+        mode: '0755'
+
+    # Include Shell Operations Tests
+    - name: Include Shell Operations Tests
+      include_tasks: shell_operations_tests.yml
+
+    # Cleanup
+    - name: Clean up test directories
+      file:
+        path: "{{ test_directory }}"
+        state: absent
+      when: cleanup_enabled | bool

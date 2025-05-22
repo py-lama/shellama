@@ -1,0 +1,36 @@
+---
+# Wrapper playbook for running Error handling tests
+
+- name: Run Error Handling Tests
+  hosts: localhost
+  gather_facts: false
+  vars:
+    shellama_base_url: "{{ lookup('env', 'SHELLAMA_URL') | default('http://localhost:5000/api/shellama', true) }}"
+    test_directory: "/tmp/shellama_test"
+    git_test_dir: "/tmp/shellama_git_test"
+    cleanup_enabled: "{{ lookup('env', 'CLEANUP_ENABLED') | default('true', true) }}"
+    generate_report: "{{ lookup('env', 'GENERATE_REPORT') | default('true', true) }}"
+  
+  tasks:
+    - name: Create test directories if they don't exist
+      file:
+        path: "{{ item }}"
+        state: directory
+        mode: '0755'
+      with_items:
+        - "{{ test_directory }}"
+        - "/tmp/not_a_git_repo"
+
+    # Include Error Handling Tests
+    - name: Include Error Handling Tests
+      include_tasks: error_handling_tests.yml
+
+    # Cleanup
+    - name: Clean up test directories
+      file:
+        path: "{{ item }}"
+        state: absent
+      with_items:
+        - "{{ test_directory }}"
+        - "/tmp/not_a_git_repo"
+      when: cleanup_enabled | bool

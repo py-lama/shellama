@@ -159,6 +159,13 @@ make ansible-test-dev
 # Validate test syntax without running tests
 make ansible-test-dry-run
 
+# Run specific test categories
+make ansible-test-git    # Run only Git operations tests
+make ansible-test-file   # Run only file operations tests
+make ansible-test-dir    # Run only directory operations tests
+make ansible-test-shell  # Run only shell operations tests
+make ansible-test-error  # Run only error handling tests
+
 # Run with additional options
 make ansible-test ANSIBLE_OPTS="--verbose --no-cleanup"
 
