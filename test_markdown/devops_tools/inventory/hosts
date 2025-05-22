@@ -1,0 +1,25 @@
+[controller]
+localhost ansible_connection=local
+
+[shellama]
+shellama-target ansible_host=shellama-target ansible_connection=docker
+
+[apilama]
+apilama-target ansible_host=apilama-target ansible_connection=docker
+
+[pyllm]
+pyllm-target ansible_host=pyllm-target ansible_connection=docker
+
+[pybox]
+pybox-target ansible_host=pybox-target ansible_connection=docker
+
+[pylama]
+pylama-target ansible_host=pylama-target ansible_connection=docker
+
+[mock_services:children]
+pyllm
+pybox
+pylama
+
+[all:vars]
+ansible_python_interpreter=/usr/bin/python3

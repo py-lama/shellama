@@ -185,6 +185,27 @@ verify-test-markdown-direct:
 test-direct: ansible-test-all-mock verify-test-markdown-direct
 	@echo -e "$(GREEN)All direct tests completed successfully.$(NC)"
 
+# Docker-based Ansible testing environment
+ansible-test-env-build:
+	@echo -e "$(GREEN)Building Ansible testing environment...$(NC)"
+	cd test_markdown/devops_tools && docker-compose -f ansible_test_docker_compose.yml build
+
+ansible-test-env-up:
+	@echo -e "$(GREEN)Starting Ansible testing environment...$(NC)"
+	cd test_markdown/devops_tools && docker-compose -f ansible_test_docker_compose.yml up -d
+
+ansible-test-env-down:
+	@echo -e "$(GREEN)Stopping Ansible testing environment...$(NC)"
+	cd test_markdown/devops_tools && docker-compose -f ansible_test_docker_compose.yml down
+
+ansible-test-env-run:
+	@echo -e "$(GREEN)Running tests in Ansible testing environment...$(NC)"
+	docker exec -it pylama-ansible-controller ansible-playbook /app/ansible_tests/shellama_test_playbook.yml $(ANSIBLE_OPTS)
+
+ansible-test-env-shell:
+	@echo -e "$(GREEN)Opening shell in Ansible testing environment...$(NC)"
+	docker exec -it pylama-ansible-controller bash
+
 # Clean up
 clean:
 	rm -rf $(VENV) *.egg-info build/ dist/ __pycache__/ .pytest_cache/ .coverage

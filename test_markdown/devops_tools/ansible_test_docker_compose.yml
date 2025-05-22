@@ -1,0 +1,136 @@
+version: '3.8'
+
+services:
+  # Ansible Controller - where tests are executed from
+  ansible-controller:
+    build:
+      context: .
+      dockerfile: ansible_test_dockerfile
+    image: pylama-ansible-controller:latest
+    container_name: pylama-ansible-controller
+    volumes:
+      - ../../ansible_tests:/app/ansible_tests
+      - ./ansible.cfg:/etc/ansible/ansible.cfg
+      - ./inventory:/app/inventory
+      - ./reports:/app/reports
+    environment:
+      - ANSIBLE_CONFIG=/etc/ansible/ansible.cfg
+      - SHELLAMA_API_URL=http://shellama-target:8002
+      - APILAMA_API_URL=http://apilama-target:8080
+      - PYLLM_API_URL=http://pyllm-target:8001
+      - PYBOX_API_URL=http://pybox-target:8000
+      - PYLAMA_API_URL=http://pylama-target:8003
+    networks:
+      - ansible-test-network
+    depends_on:
+      - shellama-target
+      - apilama-target
+    command: ["sleep", "infinity"]
+
+  # SheLLama Target - service being tested
+  shellama-target:
+    build:
+      context: ../../
+      dockerfile: Dockerfile
+    image: shellama-test:latest
+    container_name: shellama-target
+    environment:
+      - PORT=8002
+      - HOST=0.0.0.0
+      - DEBUG=true
+    ports:
+      - "8002:8002"
+    volumes:
+      - ../../:/app
+    networks:
+      - ansible-test-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8002/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
+  # APILama Target - gateway service
+  apilama-target:
+    build:
+      context: ../../../apilama
+      dockerfile: Dockerfile
+    image: apilama-test:latest
+    container_name: apilama-target
+    environment:
+      - PORT=8080
+      - HOST=0.0.0.0
+      - DEBUG=true
+      - SHELLAMA_API_URL=http://shellama-target:8002
+      - PYLLM_API_URL=http://pyllm-target:8001
+      - PYBOX_API_URL=http://pybox-target:8000
+      - PYLAMA_API_URL=http://pylama-target:8003
+    ports:
+      - "8080:8080"
+    networks:
+      - ansible-test-network
+    depends_on:
+      - shellama-target
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
+  # Mock PyLLM Target - for testing integration
+  pyllm-target:
+    build:
+      context: .
+      dockerfile: mock_service_dockerfile
+    image: mock-pyllm:latest
+    container_name: pyllm-target
+    environment:
+      - SERVICE_NAME=pyllm
+      - PORT=8001
+      - HOST=0.0.0.0
+    ports:
+      - "8001:8001"
+    networks:
+      - ansible-test-network
+
+  # Mock PyBox Target - for testing integration
+  pybox-target:
+    build:
+      context: .
+      dockerfile: mock_service_dockerfile
+    image: mock-pybox:latest
+    container_name: pybox-target
+    environment:
+      - SERVICE_NAME=pybox
+      - PORT=8000
+      - HOST=0.0.0.0
+    ports:
+      - "8000:8000"
+    networks:
+      - ansible-test-network
+
+  # Mock PyLama Target - for testing integration
+  pylama-target:
+    build:
+      context: .
+      dockerfile: mock_service_dockerfile
+    image: mock-pylama:latest
+    container_name: pylama-target
+    environment:
+      - SERVICE_NAME=pylama
+      - PORT=8003
+      - HOST=0.0.0.0
+    ports:
+      - "8003:8003"
+    networks:
+      - ansible-test-network
+
+networks:
+  ansible-test-network:
+    driver: bridge
+
+volumes:
+  reports:
+    driver: local

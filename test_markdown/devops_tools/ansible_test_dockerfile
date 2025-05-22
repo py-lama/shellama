@@ -1,0 +1,67 @@
+# Ansible Testing Dockerfile for PyLama Ecosystem
+
+FROM python:3.9-slim
+
+LABEL maintainer="PyLama Team <info@example.com>"
+LABEL version="1.0.0"
+LABEL description="Ansible testing environment for PyLama ecosystem"
+
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    ANSIBLE_HOST_KEY_CHECKING=False \
+    ANSIBLE_RETRY_FILES_ENABLED=False \
+    ANSIBLE_SSH_PIPELINING=True
+
+# Set working directory
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git \
+    curl \
+    ssh \
+    sshpass \
+    build-essential \
+    python3-dev \
+    libffi-dev \
+    libssl-dev \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Ansible and other Python dependencies
+RUN pip install --no-cache-dir \
+    ansible==6.7.0 \
+    pytest==7.3.1 \
+    pytest-ansible==3.1.0 \
+    pytest-mock==3.10.0 \
+    requests==2.28.2 \
+    flask==2.2.3 \
+    python-dotenv==1.0.0 \
+    virtualenv==20.21.0 \
+    poetry==1.4.2 \
+    pipenv==2023.4.29
+
+# Create directory structure for tests
+RUN mkdir -p /app/ansible_tests/playbooks \
+    /app/ansible_tests/inventory \
+    /app/ansible_tests/roles \
+    /app/ansible_tests/logs \
+    /app/ansible_tests/reports
+
+# Copy ansible configuration
+COPY ansible.cfg /etc/ansible/ansible.cfg
+
+# Create a non-root user for running tests
+RUN groupadd -r ansible && \
+    useradd -r -g ansible ansible && \
+    chown -R ansible:ansible /app
+
+# Switch to non-root user
+USER ansible
+
+# Set the entrypoint
+ENTRYPOINT ["ansible-playbook"]
+
+# Default command (can be overridden)
+CMD ["--version"]
