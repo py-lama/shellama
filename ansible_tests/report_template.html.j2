@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SheLLama Ansible Test Report</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        .header {
+            background-color: #3498db;
+            color: white;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .summary {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border-left: 5px solid #3498db;
+        }
+        .test-section {
+            margin-bottom: 30px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+        }
+        .test-header {
+            background-color: #f8f9fa;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 3px;
+        }
+        .success {
+            color: #27ae60;
+        }
+        .failure {
+            color: #e74c3c;
+        }
+        .details {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 3px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>SheLLama Ansible Test Report</h1>
+        <p>Generated on: {{ current_datetime.stdout }}</p>
+    </div>
+
+    <div class="summary">
+        <h2>Test Summary</h2>
+        <p><strong>SheLLama URL:</strong> {{ lookup('env', 'SHELLAMA_URL') }}</p>
+        <p><strong>Test Directory:</strong> {{ hostvars['localhost']['test_directory'] }}</p>
+        <p><strong>Git Test Directory:</strong> {{ hostvars['localhost']['git_test_dir'] }}</p>
+    </div>
+
+    <div class="test-section">
+        <h2>Health Check Tests</h2>
+        <div class="test-header">
+            {% if hostvars['localhost']['health_result'] is defined and hostvars['localhost']['health_result'].json.status == "ok" %}
+            <h3 class="success">✅ Health Check: PASSED</h3>
+            {% else %}
+            <h3 class="failure">❌ Health Check: FAILED</h3>
+            {% endif %}
+        </div>
+        {% if hostvars['localhost']['health_result'] is defined %}
+        <div class="details">
+            {{ hostvars['localhost']['health_result'] | to_nice_json }}
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="test-section">
+        <h2>File Operations Tests</h2>
+        <table>
+            <tr>
+                <th>Operation</th>
+                <th>Status</th>
+                <th>Details</th>
+            </tr>
+            <tr>
+                <td>List Files</td>
+                <td>
+                    {% if hostvars['localhost']['list_files_result'] is defined and hostvars['localhost']['list_files_result'].json.status == "success" %}
+                    <span class="success">✅ PASSED</span>
+                    {% else %}
+                    <span class="failure">❌ FAILED</span>
+                    {% endif %}
+                </td>
+                <td>{{ hostvars['localhost']['list_files_result'].json.status if hostvars['localhost']['list_files_result'] is defined else 'Not tested' }}</td>
+            </tr>
+            <tr>
+                <td>Create File</td>
+                <td>
+                    {% if hostvars['localhost']['create_file_result'] is defined and hostvars['localhost']['create_file_result'].json.status == "success" %}
+                    <span class="success">✅ PASSED</span>
+                    {% else %}
+                    <span class="failure">❌ FAILED</span>
+                    {% endif %}
+                </td>
+                <td>{{ hostvars['localhost']['create_file_result'].json.status if hostvars['localhost']['create_file_result'] is defined else 'Not tested' }}</td>
+            </tr>
+            <tr>
+                <td>Read File</td>
+                <td>
+                    {% if hostvars['localhost']['read_file_result'] is defined and hostvars['localhost']['read_file_result'].json.status == "success" %}
+                    <span class="success">✅ PASSED</span>
+                    {% else %}
+                    <span class="failure">❌ FAILED</span>
+                    {% endif %}
+                </td>
+                <td>{{ hostvars['localhost']['read_file_result'].json.status if hostvars['localhost']['read_file_result'] is defined else 'Not tested' }}</td>
+            </tr>
+            <tr>
+                <td>Update File</td>
+                <td>
+                    {% if hostvars['localhost']['update_file_result'] is defined and hostvars['localhost']['update_file_result'].json.status == "success" %}
+                    <span class="success">✅ PASSED</span>
+                    {% else %}
+                    <span class="failure">❌ FAILED</span>
+                    {% endif %}
+                </td>
+                <td>{{ hostvars['localhost']['update_file_result'].json.status if hostvars['localhost']['update_file_result'] is defined else 'Not tested' }}</td>
+            </tr>
+            <tr>
+                <td>Delete File</td>
+                <td>
+                    {% if hostvars['localhost']['delete_file_result'] is defined and hostvars['localhost']['delete_file_result'].json.status == "success" %}
+                    <span class="success">✅ PASSED</span>
+                    {% else %}
+                    <span class="failure">❌ FAILED</span>
+                    {% endif %}
+                </td>
+                <td>{{ hostvars['localhost']['delete_file_result'].json.status if hostvars['localhost']['delete_file_result'] is defined else 'Not tested' }}</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="test-section">
+        <h2>Directory Operations Tests</h2>
+        <table>
+            <tr>
+                <th>Operation</th>
+                <th>Status</th>
+                <th>Details</th>
+            </tr>
+            <tr>
+                <td>Create Directory</td>
+                <td>
+                    {% if hostvars['localhost']['create_directory_result'] is defined and hostvars['localhost']['create_directory_result'].json.status == "success" %}
+                    <span class="success">✅ PASSED</span>
+                    {% else %}
+                    <span class="failure">❌ FAILED</span>
+                    {% endif %}
+                </td>
+                <td>{{ hostvars['localhost']['create_directory_result'].json.status if hostvars['localhost']['create_directory_result'] is defined else 'Not tested' }}</td>
+            </tr>
+            <tr>
+                <td>List Directory</td>
+                <td>
+                    {% if hostvars['localhost']['list_directory_result'] is defined and hostvars['localhost']['list_directory_result'].json.status == "success" %}
+                    <span class="success">✅ PASSED</span>
+                    {% else %}
+                    <span class="failure">❌ FAILED</span>
+                    {% endif %}
+                </td>
+                <td>{{ hostvars['localhost']['list_directory_result'].json.status if hostvars['localhost']['list_directory_result'] is defined else 'Not tested' }}</td>
+            </tr>
+            <tr>
+                <td>Delete Directory</td>
+                <td>
+                    {% if hostvars['localhost']['delete_directory_result'] is defined and hostvars['localhost']['delete_directory_result'].json.status == "success" %}
+                    <span class="success">✅ PASSED</span>
+                    {% else %}
+                    <span class="failure">❌ FAILED</span>
+                    {% endif %}
+                </td>
+                <td>{{ hostvars['localhost']['delete_directory_result'].json.status if hostvars['localhost']['delete_directory_result'] is defined else 'Not tested' }}</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="test-section">
+        <h2>Shell Operations Tests</h2>
+        <table>
+            <tr>
+                <th>Operation</th>
+                <th>Status</th>
+                <th>Details</th>
+            </tr>
+            <tr>
+                <td>Execute Command</td>
+                <td>
+                    {% if hostvars['localhost']['execute_command_result'] is defined and hostvars['localhost']['execute_command_result'].json.status == "success" %}
+                    <span class="success">✅ PASSED</span>
+                    {% else %}
+                    <span class="failure">❌ FAILED</span>
+                    {% endif %}
+                </td>
+                <td>{{ hostvars['localhost']['execute_command_result'].json.status if hostvars['localhost']['execute_command_result'] is defined else 'Not tested' }}</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="test-section">
+        <h2>Git Operations Tests</h2>
+        <table>
+            <tr>
+                <th>Operation</th>
+                <th>Status</th>
+                <th>Details</th>
+            </tr>
+            <tr>
+                <td>Initialize Repository</td>
+                <td>
+                    {% if hostvars['localhost']['git_init_result'] is defined and hostvars['localhost']['git_init_result'].json.status == "success" %}
+                    <span class="success">✅ PASSED</span>
+                    {% else %}
+                    <span class="failure">❌ FAILED</span>
+                    {% endif %}
+                </td>
+                <td>{{ hostvars['localhost']['git_init_result'].json.status if hostvars['localhost']['git_init_result'] is defined else 'Not tested' }}</td>
+            </tr>
+            <tr>
+                <td>Get Status</td>
+                <td>
+                    {% if hostvars['localhost']['git_status_untracked_result'] is defined and hostvars['localhost']['git_status_untracked_result'].json.status == "success" %}
+                    <span class="success">✅ PASSED</span>
+                    {% else %}
+                    <span class="failure">❌ FAILED</span>
+                    {% endif %}
+                </td>
+                <td>{{ hostvars['localhost']['git_status_untracked_result'].json.status if hostvars['localhost']['git_status_untracked_result'] is defined else 'Not tested' }}</td>
+            </tr>
+            <tr>
+                <td>Add Files</td>
+                <td>
+                    {% if hostvars['localhost']['git_add_result'] is defined and hostvars['localhost']['git_add_result'].json.status == "success" %}
+                    <span class="success">✅ PASSED</span>
+                    {% else %}
+                    <span class="failure">❌ FAILED</span>
+                    {% endif %}
+                </td>
+                <td>{{ hostvars['localhost']['git_add_result'].json.status if hostvars['localhost']['git_add_result'] is defined else 'Not tested' }}</td>
+            </tr>
+            <tr>
+                <td>Commit Changes</td>
+                <td>
+                    {% if hostvars['localhost']['git_commit_result'] is defined and hostvars['localhost']['git_commit_result'].json.status == "success" %}
+                    <span class="success">✅ PASSED</span>
+                    {% else %}
+                    <span class="failure">❌ FAILED</span>
+                    {% endif %}
+                </td>
+                <td>{{ hostvars['localhost']['git_commit_result'].json.status if hostvars['localhost']['git_commit_result'] is defined else 'Not tested' }}</td>
+            </tr>
+            <tr>
+                <td>Get History</td>
+                <td>
+                    {% if hostvars['localhost']['git_history_result'] is defined and hostvars['localhost']['git_history_result'].json.status == "success" %}
+                    <span class="success">✅ PASSED</span>
+                    {% else %}
+                    <span class="failure">❌ FAILED</span>
+                    {% endif %}
+                </td>
+                <td>{{ hostvars['localhost']['git_history_result'].json.status if hostvars['localhost']['git_history_result'] is defined else 'Not tested' }}</td>
+            </tr>
+            <tr>
+                <td>Create Branch</td>
+                <td>
+                    {% if hostvars['localhost']['git_create_branch_result'] is defined and hostvars['localhost']['git_create_branch_result'].json.status == "success" %}
+                    <span class="success">✅ PASSED</span>
+                    {% else %}
+                    <span class="failure">❌ FAILED</span>
+                    {% endif %}
+                </td>
+                <td>{{ hostvars['localhost']['git_create_branch_result'].json.status if hostvars['localhost']['git_create_branch_result'] is defined else 'Not tested' }}</td>
+            </tr>
+            <tr>
+                <td>List Branches</td>
+                <td>
+                    {% if hostvars['localhost']['git_list_branches_result'] is defined and hostvars['localhost']['git_list_branches_result'].json.status == "success" %}
+                    <span class="success">✅ PASSED</span>
+                    {% else %}
+                    <span class="failure">❌ FAILED</span>
+                    {% endif %}
+                </td>
+                <td>{{ hostvars['localhost']['git_list_branches_result'].json.status if hostvars['localhost']['git_list_branches_result'] is defined else 'Not tested' }}</td>
+            </tr>
+            <tr>
+                <td>Checkout Branch</td>
+                <td>
+                    {% if hostvars['localhost']['git_checkout_result'] is defined and hostvars['localhost']['git_checkout_result'].json.status == "success" %}
+                    <span class="success">✅ PASSED</span>
+                    {% else %}
+                    <span class="failure">❌ FAILED</span>
+                    {% endif %}
+                </td>
+                <td>{{ hostvars['localhost']['git_checkout_result'].json.status if hostvars['localhost']['git_checkout_result'] is defined else 'Not tested' }}</td>
+            </tr>
+            <tr>
+                <td>Merge Branch</td>
+                <td>
+                    {% if hostvars['localhost']['git_merge_result'] is defined and hostvars['localhost']['git_merge_result'].json.status == "success" %}
+                    <span class="success">✅ PASSED</span>
+                    {% else %}
+                    <span class="failure">❌ FAILED</span>
+                    {% endif %}
+                </td>
+                <td>{{ hostvars['localhost']['git_merge_result'].json.status if hostvars['localhost']['git_merge_result'] is defined else 'Not tested' }}</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="test-section">
+        <h2>Test Assertions</h2>
+        <table>
+            <tr>
+                <th>Assertion</th>
+                <th>Status</th>
+                <th>Message</th>
+            </tr>
+            <tr>
+                <td>Multiple Commits</td>
+                <td>
+                    {% if hostvars['localhost']['git_updated_history_result'] is defined and hostvars['localhost']['git_updated_history_result'].json.history | length >= 2 %}
+                    <span class="success">✅ PASSED</span>
+                    {% else %}
+                    <span class="failure">❌ FAILED</span>
+                    {% endif %}
+                </td>
+                <td>{{ "Git history contains multiple commits as expected" if hostvars['localhost']['git_updated_history_result'] is defined and hostvars['localhost']['git_updated_history_result'].json.history | length >= 2 else "Should have at least 2 commits in history" }}</td>
+            </tr>
+            <tr>
+                <td>Branch Creation</td>
+                <td>
+                    {% if hostvars['localhost']['git_list_branches_result'] is defined and "feature-branch" in (hostvars['localhost']['git_list_branches_result'].json.branches | map(attribute='name') | list) %}
+                    <span class="success">✅ PASSED</span>
+                    {% else %}
+                    <span class="failure">❌ FAILED</span>
+                    {% endif %}
+                </td>
+                <td>{{ "Feature branch was created successfully" if hostvars['localhost']['git_list_branches_result'] is defined and "feature-branch" in (hostvars['localhost']['git_list_branches_result'].json.branches | map(attribute='name') | list) else "Feature branch was not created successfully" }}</td>
+            </tr>
+            <tr>
+                <td>Merge Commit</td>
+                <td>
+                    {% if hostvars['localhost']['git_final_history_result'] is defined and "Merge feature branch into main" in (hostvars['localhost']['git_final_history_result'].json.history | map(attribute='message') | list) %}
+                    <span class="success">✅ PASSED</span>
+                    {% else %}
+                    <span class="failure">❌ FAILED</span>
+                    {% endif %}
+                </td>
+                <td>{{ "Merge commit was successfully created" if hostvars['localhost']['git_final_history_result'] is defined and "Merge feature branch into main" in (hostvars['localhost']['git_final_history_result'].json.history | map(attribute='message') | list) else "Merge commit was not found in history" }}</td>
+            </tr>
+        </table>
+    </div>
+</body>
+</html>

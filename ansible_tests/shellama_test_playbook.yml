@@ -58,3 +58,8 @@
         - "{{ test_directory }}"
         - "{{ git_test_dir }}"
       when: cleanup_enabled | default(true)
+
+    # Generate Test Report
+    - name: Include report generation playbook
+      include_tasks: generate_report.yml
+      when: generate_report | default(true)
