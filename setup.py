@@ -9,7 +9,7 @@ with open("README.md", "r") as fh:
 setup(
     name="shellama",
     version="0.1.0",
-    author="PyLama Team",
+    author="Tom Sapletta",
     author_email="info@pylama.dev",
     description="Shell and filesystem operations for the PyLama ecosystem",
     long_description=long_description,
