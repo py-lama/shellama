@@ -49,6 +49,9 @@
     - name: Include Git Operations Tests
       include_tasks: git_operations_tests.yml
 
+    - name: Include Error Handling Tests
+      include_tasks: error_handling_tests.yml
+
     # Cleanup
     - name: Clean up test directories
       file:

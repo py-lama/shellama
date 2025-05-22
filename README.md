@@ -153,9 +153,32 @@ SheLLama includes a comprehensive suite of Ansible tests that verify the functio
 # Run all Ansible tests
 make ansible-test
 
-# Or run the test script directly
+# Or run the test script directly with options
 ./run_ansible_tests.sh
+
+# Run with verbose output
+./run_ansible_tests.sh --verbose
+
+# Run without cleaning up test directories
+./run_ansible_tests.sh --no-cleanup
+
+# Run without generating HTML report
+./run_ansible_tests.sh --no-report
+
+# Show help
+./run_ansible_tests.sh --help
 ```
+
+#### Test Reports
+
+The Ansible tests generate a comprehensive HTML report that provides detailed information about the test results. The report includes:
+
+- Test summary with overall status
+- Detailed results for each test category (file operations, directory operations, shell operations, git operations)
+- Assertions verification
+- Timestamps and environment information
+
+Test reports are saved in the `ansible_tests/logs/` directory with a timestamp in the filename.
 
 The Ansible tests cover:
 - File operations (create, read, update, delete)
@@ -168,6 +191,11 @@ The Ansible tests cover:
   - Branch creation and checkout
   - Merging branches
   - Viewing commit history
+- Error handling (edge cases):
+  - Non-existent directories and files
+  - Invalid Git repositories and branches
+  - Invalid shell commands
+  - Proper error response validation
 - Health check endpoints
 
 #### Testing through APILama Gateway

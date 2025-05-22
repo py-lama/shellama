@@ -1,0 +1,94 @@
+---
+# Error Handling Tests
+# Tests error handling for various SheLLama endpoints
+
+- name: Test Error Handling - Non-existent Directory
+  uri:
+    url: "{{ shellama_base_url }}/files"
+    method: GET
+    return_content: yes
+    params:
+      directory: "/path/that/does/not/exist"
+    status_code: 500
+  register: nonexistent_dir_result
+  ignore_errors: yes
+
+- name: Verify Error Response for Non-existent Directory
+  assert:
+    that:
+      - nonexistent_dir_result.json.status == "error"
+    fail_msg: "API should return error status for non-existent directory"
+    success_msg: "API correctly returns error for non-existent directory"
+
+- name: Test Error Handling - Non-existent File
+  uri:
+    url: "{{ shellama_base_url }}/file"
+    method: GET
+    return_content: yes
+    params:
+      filename: "/path/to/nonexistent/file.txt"
+    status_code: 500
+  register: nonexistent_file_result
+  ignore_errors: yes
+
+- name: Verify Error Response for Non-existent File
+  assert:
+    that:
+      - nonexistent_file_result.json.status == "error"
+    fail_msg: "API should return error status for non-existent file"
+    success_msg: "API correctly returns error for non-existent file"
+
+- name: Test Error Handling - Invalid Git Repository
+  uri:
+    url: "{{ shellama_base_url }}/git/status"
+    method: GET
+    return_content: yes
+    params:
+      path: "/tmp/not_a_git_repo"
+    status_code: 500
+  register: invalid_git_repo_result
+  ignore_errors: yes
+
+- name: Verify Error Response for Invalid Git Repository
+  assert:
+    that:
+      - invalid_git_repo_result.json.status == "error"
+    fail_msg: "API should return error status for invalid git repository"
+    success_msg: "API correctly returns error for invalid git repository"
+
+- name: Test Error Handling - Invalid Git Branch
+  uri:
+    url: "{{ shellama_base_url }}/git/checkout"
+    method: POST
+    body_format: json
+    body:
+      path: "{{ git_test_dir }}"
+      branch: "nonexistent-branch"
+    status_code: 500
+  register: invalid_branch_result
+  ignore_errors: yes
+
+- name: Verify Error Response for Invalid Git Branch
+  assert:
+    that:
+      - invalid_branch_result.json.status == "error"
+    fail_msg: "API should return error status for invalid git branch"
+    success_msg: "API correctly returns error for invalid git branch"
+
+- name: Test Error Handling - Invalid Shell Command
+  uri:
+    url: "{{ shellama_base_url }}/shell"
+    method: POST
+    body_format: json
+    body:
+      command: "invalid_command_that_does_not_exist"
+    status_code: 500
+  register: invalid_command_result
+  ignore_errors: yes
+
+- name: Verify Error Response for Invalid Shell Command
+  assert:
+    that:
+      - invalid_command_result.json.status == "error"
+    fail_msg: "API should return error status for invalid shell command"
+    success_msg: "API correctly returns error for invalid shell command"

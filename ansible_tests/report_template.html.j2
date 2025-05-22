@@ -346,6 +346,72 @@
     </div>
 
     <div class="test-section">
+        <h2>Error Handling Tests</h2>
+        <table>
+            <tr>
+                <th>Test Case</th>
+                <th>Status</th>
+                <th>Details</th>
+            </tr>
+            <tr>
+                <td>Non-existent Directory</td>
+                <td>
+                    {% if hostvars['localhost']['nonexistent_dir_result'] is defined and hostvars['localhost']['nonexistent_dir_result'].json.status == "error" %}
+                    <span class="success">✅ PASSED</span>
+                    {% else %}
+                    <span class="failure">❌ FAILED</span>
+                    {% endif %}
+                </td>
+                <td>{{ "API correctly returns error for non-existent directory" if hostvars['localhost']['nonexistent_dir_result'] is defined and hostvars['localhost']['nonexistent_dir_result'].json.status == "error" else "API should return error status for non-existent directory" }}</td>
+            </tr>
+            <tr>
+                <td>Non-existent File</td>
+                <td>
+                    {% if hostvars['localhost']['nonexistent_file_result'] is defined and hostvars['localhost']['nonexistent_file_result'].json.status == "error" %}
+                    <span class="success">✅ PASSED</span>
+                    {% else %}
+                    <span class="failure">❌ FAILED</span>
+                    {% endif %}
+                </td>
+                <td>{{ "API correctly returns error for non-existent file" if hostvars['localhost']['nonexistent_file_result'] is defined and hostvars['localhost']['nonexistent_file_result'].json.status == "error" else "API should return error status for non-existent file" }}</td>
+            </tr>
+            <tr>
+                <td>Invalid Git Repository</td>
+                <td>
+                    {% if hostvars['localhost']['invalid_git_repo_result'] is defined and hostvars['localhost']['invalid_git_repo_result'].json.status == "error" %}
+                    <span class="success">✅ PASSED</span>
+                    {% else %}
+                    <span class="failure">❌ FAILED</span>
+                    {% endif %}
+                </td>
+                <td>{{ "API correctly returns error for invalid git repository" if hostvars['localhost']['invalid_git_repo_result'] is defined and hostvars['localhost']['invalid_git_repo_result'].json.status == "error" else "API should return error status for invalid git repository" }}</td>
+            </tr>
+            <tr>
+                <td>Invalid Git Branch</td>
+                <td>
+                    {% if hostvars['localhost']['invalid_branch_result'] is defined and hostvars['localhost']['invalid_branch_result'].json.status == "error" %}
+                    <span class="success">✅ PASSED</span>
+                    {% else %}
+                    <span class="failure">❌ FAILED</span>
+                    {% endif %}
+                </td>
+                <td>{{ "API correctly returns error for invalid git branch" if hostvars['localhost']['invalid_branch_result'] is defined and hostvars['localhost']['invalid_branch_result'].json.status == "error" else "API should return error status for invalid git branch" }}</td>
+            </tr>
+            <tr>
+                <td>Invalid Shell Command</td>
+                <td>
+                    {% if hostvars['localhost']['invalid_command_result'] is defined and hostvars['localhost']['invalid_command_result'].json.status == "error" %}
+                    <span class="success">✅ PASSED</span>
+                    {% else %}
+                    <span class="failure">❌ FAILED</span>
+                    {% endif %}
+                </td>
+                <td>{{ "API correctly returns error for invalid shell command" if hostvars['localhost']['invalid_command_result'] is defined and hostvars['localhost']['invalid_command_result'].json.status == "error" else "API should return error status for invalid shell command" }}</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="test-section">
         <h2>Test Assertions</h2>
         <table>
             <tr>
