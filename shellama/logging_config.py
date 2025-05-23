@@ -20,15 +20,16 @@ if loglama_path.exists() and str(loglama_path) not in sys.path:
     print(f"Added PyLogs path: {loglama_path}")
 else:
     # Try an alternative path calculation
-    alt_pylogs_path = Path('/home/tom/github/py-lama/loglama')
-    if alt_loglama_path.exists() and str(alt_pylogs_path) not in sys.path:
-        sys.path.insert(0, str(alt_pylogs_path))
-        print(f"Added alternative PyLogs path: {alt_pylogs_path}")
+    alt_loglama_path = Path('/home/tom/github/py-lama/loglama')
+    if alt_loglama_path.exists() and str(alt_loglama_path) not in sys.path:
+        sys.path.insert(0, str(alt_loglama_path))
+        print(f"Added alternative PyLogs path: {alt_loglama_path}")
 
 # Import PyLogs components
 try:
     from loglama.config.env_loader import load_env, get_env
-    from loglama.utils import configure_logging, LogContext, capture_context
+    from loglama.utils import configure_logging
+    from loglama.utils.context import LogContext, capture_context
     from loglama.formatters import ColoredFormatter, JSONFormatter
     from loglama.handlers import SQLiteHandler, EnhancedRotatingFileHandler
     LOGLAMA_AVAILABLE = True

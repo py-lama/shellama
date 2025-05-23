@@ -30,6 +30,20 @@ from shellama import file_ops, dir_ops, shell, git_ops
 from shellama.logger import logger as shellama_logger
 
 
+def init_app(app):
+    """
+    Initialize the Flask application with additional configurations.
+    
+    Args:
+        app (Flask): The Flask application instance.
+    """
+    logger.info('Initializing SheLLama application')
+    # Configure logging
+    if not app.debug:
+        # Add production-specific logging configuration if needed
+        pass
+
+
 def create_app(test_config=None):
     """
     Create and configure the Flask application.
