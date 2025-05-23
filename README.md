@@ -1,6 +1,6 @@
 # SheLLama
 
-SheLLama is a dedicated REST API service for shell and filesystem operations in the PyLama ecosystem. It provides a unified interface for file management, directory operations, shell command execution, and Git integration, available both as a Python library and a standalone REST API service that communicates with the APILama gateway.
+SheLLama is a dedicated REST API service for shell and filesystem operations in the PyLama ecosystem. It provides a unified interface for file management, directory operations, shell command execution, and Git integration, available both as a Python library and a standalone REST API service that communicates with the APILama gateway. SheLLama integrates with LogLama as the primary service for centralized logging, environment management, and service orchestration.
 
 ## Features
 
@@ -11,7 +11,8 @@ SheLLama is a dedicated REST API service for shell and filesystem operations in 
 - **Git Integration**: Initialize repositories, commit changes, view status and logs
 - **Secure File Handling**: Proper permissions and security checks for all operations
 - **Cross-Origin Support**: CORS headers for integration with web applications
-- **Detailed Logging**: Comprehensive logging of all operations for debugging and auditing
+- **LogLama Integration**: Integrates with LogLama for centralized logging, environment management, and service orchestration
+- **Structured Logging**: All operations are logged with component context for better filtering and analysis
 - **Advanced Error Handling**: Standardized error responses with categorization and severity levels
 - **Debug Window Integration**: Real-time debugging information with filtering capabilities
 - **Dependency Management**: Support for pip, Poetry, and Pipenv for flexible dependency management
