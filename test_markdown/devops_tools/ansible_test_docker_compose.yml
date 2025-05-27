@@ -18,7 +18,7 @@ services:
       - SHELLAMA_API_URL=http://shellama-target:19002
       - APILAMA_API_URL=http://apilama-target:19080
       - PYLLM_API_URL=http://pyllm-target:19001
-      - PYBOX_API_URL=http://pybox-target:19000
+      - BEXY_API_URL=http://bexy-target:19000
       - PYLAMA_API_URL=http://pylama-target:19003
     networks:
       - ansible-test-network
@@ -64,7 +64,7 @@ services:
       - DEBUG=true
       - SHELLAMA_API_URL=http://shellama-target:19002
       - PYLLM_API_URL=http://pyllm-target:19001
-      - PYBOX_API_URL=http://pybox-target:19000
+      - BEXY_API_URL=http://bexy-target:19000
       - PYLAMA_API_URL=http://pylama-target:19003
     ports:
       - "19080:19080"
@@ -95,15 +95,15 @@ services:
     networks:
       - ansible-test-network
 
-  # Mock PyBox Target - for testing integration
-  pybox-target:
+  # Mock BEXY Target - for testing integration
+  bexy-target:
     build:
       context: .
       dockerfile: mock_service_dockerfile
-    image: mock-pybox:latest
-    container_name: pybox-target
+    image: mock-bexy:latest
+    container_name: bexy-target
     environment:
-      - SERVICE_NAME=pybox
+      - SERVICE_NAME=bexy
       - PORT=19000
       - HOST=0.0.0.0
     ports:

@@ -46,7 +46,7 @@ services:
       - APILAMA_DEBUG=false
       - SHELLAMA_URL=http://shellama:5000
       - PYLLM_URL=http://pyllm:5002
-      - PYBOX_URL=http://pybox:5003
+      - BEXY_URL=http://bexy:5003
     volumes:
       - ../apilama/data:/app/data
       - ../apilama/logs:/app/logs
@@ -86,27 +86,27 @@ services:
       retries: 3
       start_period: 5s
 
-  # PyBox service
-  pybox:
+  # BEXY service
+  bexy:
     build:
-      context: ../pybox
+      context: ../bexy
       dockerfile: Dockerfile
-    image: pybox:latest
-    container_name: pybox-service
+    image: bexy:latest
+    container_name: bexy-service
     restart: unless-stopped
     ports:
       - "5003:5003"
     environment:
-      - PYBOX_PORT=5003
-      - PYBOX_HOST=0.0.0.0
-      - PYBOX_DEBUG=false
+      - BEXY_PORT=5003
+      - BEXY_HOST=0.0.0.0
+      - BEXY_DEBUG=false
     volumes:
-      - ../pybox/data:/app/data
-      - ../pybox/logs:/app/logs
+      - ../bexy/data:/app/data
+      - ../bexy/logs:/app/logs
     networks:
       - pylama-network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5003/api/pybox/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:5003/api/bexy/health"]
       interval: 30s
       timeout: 5s
       retries: 3

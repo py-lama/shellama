@@ -10,15 +10,15 @@ apilama-target ansible_host=apilama-target ansible_connection=docker
 [pyllm]
 pyllm-target ansible_host=pyllm-target ansible_connection=docker
 
-[pybox]
-pybox-target ansible_host=pybox-target ansible_connection=docker
+[bexy]
+bexy-target ansible_host=bexy-target ansible_connection=docker
 
 [pylama]
 pylama-target ansible_host=pylama-target ansible_connection=docker
 
 [mock_services:children]
 pyllm
-pybox
+bexy
 pylama
 
 [all:vars]

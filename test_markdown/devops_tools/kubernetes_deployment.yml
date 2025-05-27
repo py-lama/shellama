@@ -32,7 +32,7 @@ data:
   APILAMA_DEBUG: "false"
   SHELLAMA_URL: "http://shellama-service:5000"
   PYLLM_URL: "http://pyllm-service:5002"
-  PYBOX_URL: "http://pybox-service:5003"
+  BEXY_URL: "http://bexy-service:5003"
 
 ---
 apiVersion: v1
