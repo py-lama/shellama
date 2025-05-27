@@ -24,7 +24,7 @@ GREEN := \033[0;32m
 YELLOW := \033[1;33m
 NC := \033[0m # No Color
 
-.PHONY: all setup venv clean test lint format run ansible-test stop
+.PHONY: all setup venv clean test lint format run ansible-test stop build test-package update-version publish publish-test
 
 all: setup
 
@@ -284,3 +284,29 @@ stop:
 	-lsof -i :19001 || true
 	-lsof -i :19003 || true
 	@echo -e "$(GREEN)All services and Docker containers have been stopped.$(NC)"
+
+
+# Build package
+build: setup
+	@echo "Building package..."
+	@. venv/bin/activate && rm -rf dist/* && python setup.py sdist bdist_wheel
+
+# Test package
+test-package: setup
+	@echo "Testing package..."
+	@. venv/bin/activate && pytest
+
+# Update version
+update-version:
+	@echo "Updating package version..."
+	@python ../scripts/update_version.py
+
+# Publish package to PyPI
+publish: test-package update-version build
+	@echo "Publishing package to PyPI..."
+	@. venv/bin/activate && twine check dist/* && twine upload dist/*
+
+# Publish package to TestPyPI
+publish-test: test-package update-version build
+	@echo "Publishing package to TestPyPI..."
+	@. venv/bin/activate && twine check dist/* && twine upload --repository testpypi dist/*
