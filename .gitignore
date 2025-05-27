@@ -1,5 +1,8 @@
-.db
+logs
+.log
 .pid
+.db
+.sqlite
 example.png
 example.db
 example.txt
