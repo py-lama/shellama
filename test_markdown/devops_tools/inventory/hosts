@@ -7,8 +7,8 @@ shellama-target ansible_host=shellama-target ansible_connection=docker
 [apilama]
 apilama-target ansible_host=apilama-target ansible_connection=docker
 
-[pyllm]
-pyllm-target ansible_host=pyllm-target ansible_connection=docker
+[getllm]
+getllm-target ansible_host=getllm-target ansible_connection=docker
 
 [bexy]
 bexy-target ansible_host=bexy-target ansible_connection=docker
@@ -17,7 +17,7 @@ bexy-target ansible_host=bexy-target ansible_connection=docker
 pylama-target ansible_host=pylama-target ansible_connection=docker
 
 [mock_services:children]
-pyllm
+getllm
 bexy
 pylama
 

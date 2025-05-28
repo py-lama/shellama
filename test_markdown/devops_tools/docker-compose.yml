@@ -45,7 +45,7 @@ services:
       - APILAMA_HOST=0.0.0.0
       - APILAMA_DEBUG=false
       - SHELLAMA_URL=http://shellama:5000
-      - PYLLM_URL=http://pyllm:5002
+      - GETLLM_URL=http://getllm:5002
       - BEXY_URL=http://bexy:5003
     volumes:
       - ../apilama/data:/app/data
@@ -60,27 +60,27 @@ services:
       start_period: 5s
 
   # PyLLM service
-  pyllm:
+  getllm:
     build:
-      context: ../pyllm
+      context: ../getllm
       dockerfile: Dockerfile
-    image: pyllm:latest
-    container_name: pyllm-service
+    image: getllm:latest
+    container_name: getllm-service
     restart: unless-stopped
     ports:
       - "5002:5002"
     environment:
-      - PYLLM_PORT=5002
-      - PYLLM_HOST=0.0.0.0
-      - PYLLM_DEBUG=false
+      - GETLLM_PORT=5002
+      - GETLLM_HOST=0.0.0.0
+      - GETLLM_DEBUG=false
     volumes:
-      - ../pyllm/data:/app/data
-      - ../pyllm/logs:/app/logs
-      - ../pyllm/models:/app/models
+      - ../getllm/data:/app/data
+      - ../getllm/logs:/app/logs
+      - ../getllm/models:/app/models
     networks:
       - pylama-network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5002/api/pyllm/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:5002/api/getllm/health"]
       interval: 30s
       timeout: 5s
       retries: 3

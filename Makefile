@@ -271,7 +271,7 @@ stop:
 	-docker stop $(shell docker ps -q --filter name="shellama-*") 2>/dev/null || true
 	-docker stop $(shell docker ps -q --filter name="apilama-*") 2>/dev/null || true
 	-docker stop $(shell docker ps -q --filter name="pylama-*") 2>/dev/null || true
-	-docker stop $(shell docker ps -q --filter name="pyllm-*") 2>/dev/null || true
+	-docker stop $(shell docker ps -q --filter name="getllm-*") 2>/dev/null || true
 	-docker stop $(shell docker ps -q --filter name="bexy-*") 2>/dev/null || true
 	@echo -e "$(YELLOW)Checking if any processes are still using the ports...$(NC)"
 	-lsof -i :8002 || true

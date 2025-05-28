@@ -17,7 +17,7 @@ services:
       - ANSIBLE_CONFIG=/etc/ansible/ansible.cfg
       - SHELLAMA_API_URL=http://shellama-target:19002
       - APILAMA_API_URL=http://apilama-target:19080
-      - PYLLM_API_URL=http://pyllm-target:19001
+      - GETLLM_API_URL=http://getllm-target:19001
       - BEXY_API_URL=http://bexy-target:19000
       - PYLAMA_API_URL=http://pylama-target:19003
     networks:
@@ -63,7 +63,7 @@ services:
       - HOST=0.0.0.0
       - DEBUG=true
       - SHELLAMA_API_URL=http://shellama-target:19002
-      - PYLLM_API_URL=http://pyllm-target:19001
+      - GETLLM_API_URL=http://getllm-target:19001
       - BEXY_API_URL=http://bexy-target:19000
       - PYLAMA_API_URL=http://pylama-target:19003
     ports:
@@ -80,14 +80,14 @@ services:
       start_period: 5s
 
   # Mock PyLLM Target - for testing integration
-  pyllm-target:
+  getllm-target:
     build:
       context: .
       dockerfile: mock_service_dockerfile
-    image: mock-pyllm:latest
-    container_name: pyllm-target
+    image: mock-getllm:latest
+    container_name: getllm-target
     environment:
-      - SERVICE_NAME=pyllm
+      - SERVICE_NAME=getllm
       - PORT=19001
       - HOST=0.0.0.0
     ports:

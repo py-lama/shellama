@@ -31,7 +31,7 @@ data:
   APILAMA_HOST: "0.0.0.0"
   APILAMA_DEBUG: "false"
   SHELLAMA_URL: "http://shellama-service:5000"
-  PYLLM_URL: "http://pyllm-service:5002"
+  GETLLM_URL: "http://getllm-service:5002"
   BEXY_URL: "http://bexy-service:5003"
 
 ---

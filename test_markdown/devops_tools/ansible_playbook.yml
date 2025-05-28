@@ -13,7 +13,7 @@
     data_dir: /var/lib/pylama
     shellama_port: 5000
     apilama_port: 5001
-    pyllm_port: 5002
+    getllm_port: 5002
     bexy_port: 5003
     weblama_port: 3000
     enable_monitoring: true
@@ -68,7 +68,7 @@
         - "{{ data_dir }}"
         - "{{ base_dir }}/shellama"
         - "{{ base_dir }}/apilama"
-        - "{{ base_dir }}/pyllm"
+        - "{{ base_dir }}/getllm"
         - "{{ base_dir }}/bexy"
         - "{{ base_dir }}/weblama"
     
@@ -91,8 +91,8 @@
     
     - name: Clone PyLLM repository
       git:
-        repo: https://github.com/py-lama/pyllm.git
-        dest: "{{ base_dir }}/pyllm"
+        repo: https://github.com/py-lama/getllm.git
+        dest: "{{ base_dir }}/getllm"
         version: main
         update: yes
       become_user: "{{ app_user }}"
@@ -121,7 +121,7 @@
       with_items:
         - shellama
         - apilama
-        - pyllm
+        - getllm
         - bexy
       become_user: "{{ app_user }}"
     
@@ -132,7 +132,7 @@
       with_items:
         - shellama
         - apilama
-        - pyllm
+        - getllm
         - bexy
       become_user: "{{ app_user }}"
     
@@ -155,8 +155,8 @@
     
     - name: Create PyLLM configuration
       template:
-        src: templates/pyllm.env.j2
-        dest: "{{ config_dir }}/pyllm.env"
+        src: templates/getllm.env.j2
+        dest: "{{ config_dir }}/getllm.env"
         owner: "{{ app_user }}"
         group: "{{ app_group }}"
         mode: '0644'
@@ -196,8 +196,8 @@
     
     - name: Create Supervisor configuration for PyLLM
       template:
-        src: templates/supervisor_pyllm.conf.j2
-        dest: /etc/supervisor/conf.d/pyllm.conf
+        src: templates/supervisor_getllm.conf.j2
+        dest: /etc/supervisor/conf.d/getllm.conf
         owner: root
         group: root
         mode: '0644'
