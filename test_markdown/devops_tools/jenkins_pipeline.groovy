@@ -79,8 +79,8 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    def shellama_image = docker.build("${DOCKER_REGISTRY}/pylama/shellama:${SHELLAMA_VERSION}", "-f Dockerfile .")
-                    def shellama_latest = docker.build("${DOCKER_REGISTRY}/pylama/shellama:latest", "-f Dockerfile .")
+                    def shellama_image = docker.build("${DOCKER_REGISTRY}/devlama/shellama:${SHELLAMA_VERSION}", "-f Dockerfile .")
+                    def shellama_latest = docker.build("${DOCKER_REGISTRY}/devlama/shellama:latest", "-f Dockerfile .")
                 }
             }
         }
@@ -89,8 +89,8 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry("https://${DOCKER_REGISTRY}", DOCKER_REGISTRY_CREDENTIALS) {
-                        def shellama_image = docker.image("${DOCKER_REGISTRY}/pylama/shellama:${SHELLAMA_VERSION}")
-                        def shellama_latest = docker.image("${DOCKER_REGISTRY}/pylama/shellama:latest")
+                        def shellama_image = docker.image("${DOCKER_REGISTRY}/devlama/shellama:${SHELLAMA_VERSION}")
+                        def shellama_latest = docker.image("${DOCKER_REGISTRY}/devlama/shellama:latest")
                         
                         shellama_image.push()
                         shellama_latest.push()

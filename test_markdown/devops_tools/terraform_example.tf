@@ -39,17 +39,17 @@ variable "instance_type" {
 variable "key_name" {
   description = "SSH key name"
   type        = string
-  default     = "pylama-key"
+  default     = "devlama-key"
 }
 
 # Create a VPC
-resource "aws_vpc" "pylama_vpc" {
+resource "aws_vpc" "devlama_vpc" {
   cidr_block           = var.vpc_cidr
   enable_dns_hostnames = true
   enable_dns_support   = true
 
   tags = {
-    Name        = "pylama-vpc-${var.environment}"
+    Name        = "devlama-vpc-${var.environment}"
     Environment = var.environment
     Project     = "PyLama"
   }
@@ -58,13 +58,13 @@ resource "aws_vpc" "pylama_vpc" {
 # Create public subnets
 resource "aws_subnet" "public_subnets" {
   count                   = length(var.availability_zones)
-  vpc_id                  = aws_vpc.pylama_vpc.id
+  vpc_id                  = aws_vpc.devlama_vpc.id
   cidr_block              = cidrsubnet(var.vpc_cidr, 8, count.index)
   availability_zone       = element(var.availability_zones, count.index)
   map_public_ip_on_launch = true
 
   tags = {
-    Name        = "pylama-public-subnet-${count.index}-${var.environment}"
+    Name        = "devlama-public-subnet-${count.index}-${var.environment}"
     Environment = var.environment
     Project     = "PyLama"
   }
@@ -73,24 +73,24 @@ resource "aws_subnet" "public_subnets" {
 # Create private subnets
 resource "aws_subnet" "private_subnets" {
   count                   = length(var.availability_zones)
-  vpc_id                  = aws_vpc.pylama_vpc.id
+  vpc_id                  = aws_vpc.devlama_vpc.id
   cidr_block              = cidrsubnet(var.vpc_cidr, 8, count.index + length(var.availability_zones))
   availability_zone       = element(var.availability_zones, count.index)
   map_public_ip_on_launch = false
 
   tags = {
-    Name        = "pylama-private-subnet-${count.index}-${var.environment}"
+    Name        = "devlama-private-subnet-${count.index}-${var.environment}"
     Environment = var.environment
     Project     = "PyLama"
   }
 }
 
 # Create Internet Gateway
-resource "aws_internet_gateway" "pylama_igw" {
-  vpc_id = aws_vpc.pylama_vpc.id
+resource "aws_internet_gateway" "devlama_igw" {
+  vpc_id = aws_vpc.devlama_vpc.id
 
   tags = {
-    Name        = "pylama-igw-${var.environment}"
+    Name        = "devlama-igw-${var.environment}"
     Environment = var.environment
     Project     = "PyLama"
   }
@@ -98,15 +98,15 @@ resource "aws_internet_gateway" "pylama_igw" {
 
 # Create route table for public subnets
 resource "aws_route_table" "public_route_table" {
-  vpc_id = aws_vpc.pylama_vpc.id
+  vpc_id = aws_vpc.devlama_vpc.id
 
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.pylama_igw.id
+    gateway_id = aws_internet_gateway.devlama_igw.id
   }
 
   tags = {
-    Name        = "pylama-public-route-table-${var.environment}"
+    Name        = "devlama-public-route-table-${var.environment}"
     Environment = var.environment
     Project     = "PyLama"
   }
@@ -120,10 +120,10 @@ resource "aws_route_table_association" "public_subnet_association" {
 }
 
 # Create security group for EC2 instances
-resource "aws_security_group" "pylama_sg" {
-  name        = "pylama-sg-${var.environment}"
+resource "aws_security_group" "devlama_sg" {
+  name        = "devlama-sg-${var.environment}"
   description = "Security group for PyLama services"
-  vpc_id      = aws_vpc.pylama_vpc.id
+  vpc_id      = aws_vpc.devlama_vpc.id
 
   # SSH access
   ingress {
@@ -182,19 +182,19 @@ resource "aws_security_group" "pylama_sg" {
   }
 
   tags = {
-    Name        = "pylama-sg-${var.environment}"
+    Name        = "devlama-sg-${var.environment}"
     Environment = var.environment
     Project     = "PyLama"
   }
 }
 
 # Create EC2 instance for PyLama services
-resource "aws_instance" "pylama_instance" {
+resource "aws_instance" "devlama_instance" {
   ami                    = data.aws_ami.ubuntu.id
   instance_type          = var.instance_type
   key_name               = var.key_name
   subnet_id              = aws_subnet.public_subnets[0].id
-  vpc_security_group_ids = [aws_security_group.pylama_sg.id]
+  vpc_security_group_ids = [aws_security_group.devlama_sg.id]
 
   root_block_device {
     volume_size = 30
@@ -207,37 +207,37 @@ resource "aws_instance" "pylama_instance" {
               apt-get install -y git python3 python3-pip python3-venv nginx
               
               # Clone repositories
-              mkdir -p /opt/pylama
-              cd /opt/pylama
+              mkdir -p /opt/devlama
+              cd /opt/devlama
               git clone https://github.com/py-lama/shellama.git
               git clone https://github.com/py-lama/apilama.git
               git clone https://github.com/py-lama/weblama.git
               
               # Setup services
-              cd /opt/pylama/shellama
+              cd /opt/devlama/shellama
               python3 -m venv venv
               ./venv/bin/pip install -r requirements.txt
               
-              cd /opt/pylama/apilama
+              cd /opt/devlama/apilama
               python3 -m venv venv
               ./venv/bin/pip install -r requirements.txt
               
-              cd /opt/pylama/weblama
+              cd /opt/devlama/weblama
               npm install
               
               # Start services
-              cd /opt/pylama/shellama
+              cd /opt/devlama/shellama
               nohup ./venv/bin/python app.py > shellama.log 2>&1 &
               
-              cd /opt/pylama/apilama
+              cd /opt/devlama/apilama
               nohup ./venv/bin/python app.py > apilama.log 2>&1 &
               
-              cd /opt/pylama/weblama
+              cd /opt/devlama/weblama
               nohup npm start > weblama.log 2>&1 &
               EOF
 
   tags = {
-    Name        = "pylama-instance-${var.environment}"
+    Name        = "devlama-instance-${var.environment}"
     Environment = var.environment
     Project     = "PyLama"
   }
@@ -261,23 +261,23 @@ data "aws_ami" "ubuntu" {
 }
 
 # Create Elastic IP for the instance
-resource "aws_eip" "pylama_eip" {
-  instance = aws_instance.pylama_instance.id
+resource "aws_eip" "devlama_eip" {
+  instance = aws_instance.devlama_instance.id
   vpc      = true
 
   tags = {
-    Name        = "pylama-eip-${var.environment}"
+    Name        = "devlama-eip-${var.environment}"
     Environment = var.environment
     Project     = "PyLama"
   }
 }
 
 # Create S3 bucket for backups
-resource "aws_s3_bucket" "pylama_backups" {
-  bucket = "pylama-backups-${var.environment}-${random_id.bucket_suffix.hex}"
+resource "aws_s3_bucket" "devlama_backups" {
+  bucket = "devlama-backups-${var.environment}-${random_id.bucket_suffix.hex}"
 
   tags = {
-    Name        = "pylama-backups-${var.environment}"
+    Name        = "devlama-backups-${var.environment}"
     Environment = var.environment
     Project     = "PyLama"
   }
@@ -291,20 +291,20 @@ resource "random_id" "bucket_suffix" {
 # Outputs
 output "instance_public_ip" {
   description = "Public IP of the PyLama instance"
-  value       = aws_eip.pylama_eip.public_ip
+  value       = aws_eip.devlama_eip.public_ip
 }
 
 output "shellama_api_url" {
   description = "URL for SheLLama API"
-  value       = "http://${aws_eip.pylama_eip.public_ip}:5000"
+  value       = "http://${aws_eip.devlama_eip.public_ip}:5000"
 }
 
 output "apilama_url" {
   description = "URL for APILama"
-  value       = "http://${aws_eip.pylama_eip.public_ip}:5001"
+  value       = "http://${aws_eip.devlama_eip.public_ip}:5001"
 }
 
 output "weblama_url" {
   description = "URL for WebLama"
-  value       = "http://${aws_eip.pylama_eip.public_ip}:3000"
+  value       = "http://${aws_eip.devlama_eip.public_ip}:3000"
 }

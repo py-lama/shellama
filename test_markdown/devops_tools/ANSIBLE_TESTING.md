@@ -46,7 +46,7 @@ docker-compose -f ansible_test_docker_compose.yml up -d
 
 ```bash
 # Connect to the Ansible controller container
-docker exec -it pylama-ansible-controller bash
+docker exec -it devlama-ansible-controller bash
 ```
 
 ### 3. Run Ansible Tests
@@ -121,11 +121,11 @@ jobs:
           
       - name: Run Ansible tests
         run: |
-          docker exec pylama-ansible-controller ansible-playbook /app/ansible_tests/shellama_test_playbook.yml
+          docker exec devlama-ansible-controller ansible-playbook /app/ansible_tests/shellama_test_playbook.yml
           
       - name: Collect test reports
         run: |
-          docker cp pylama-ansible-controller:/app/reports ./reports
+          docker cp devlama-ansible-controller:/app/reports ./reports
           
       - name: Upload test reports
         uses: actions/upload-artifact@v2

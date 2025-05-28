@@ -6,8 +6,8 @@ services:
     build:
       context: .
       dockerfile: ansible_test_dockerfile
-    image: pylama-ansible-controller:latest
-    container_name: pylama-ansible-controller
+    image: devlama-ansible-controller:latest
+    container_name: devlama-ansible-controller
     volumes:
       - ../../ansible_tests:/app/ansible_tests
       - ./ansible.cfg:/etc/ansible/ansible.cfg
@@ -19,7 +19,7 @@ services:
       - APILAMA_API_URL=http://apilama-target:19080
       - GETLLM_API_URL=http://getllm-target:19001
       - BEXY_API_URL=http://bexy-target:19000
-      - PYLAMA_API_URL=http://pylama-target:19003
+      - DEVLAMA_API_URL=http://devlama-target:19003
     networks:
       - ansible-test-network
     depends_on:
@@ -65,7 +65,7 @@ services:
       - SHELLAMA_API_URL=http://shellama-target:19002
       - GETLLM_API_URL=http://getllm-target:19001
       - BEXY_API_URL=http://bexy-target:19000
-      - PYLAMA_API_URL=http://pylama-target:19003
+      - DEVLAMA_API_URL=http://devlama-target:19003
     ports:
       - "19080:19080"
     networks:
@@ -112,14 +112,14 @@ services:
       - ansible-test-network
 
   # Mock PyLama Target - for testing integration
-  pylama-target:
+  devlama-target:
     build:
       context: .
       dockerfile: mock_service_dockerfile
-    image: mock-pylama:latest
-    container_name: pylama-target
+    image: mock-devlama:latest
+    container_name: devlama-target
     environment:
-      - SERVICE_NAME=pylama
+      - SERVICE_NAME=devlama
       - PORT=19003
       - HOST=0.0.0.0
     ports:

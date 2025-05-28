@@ -2,15 +2,15 @@
 # Example Ansible playbook for SheLLama DevOps tools testing
 
 - name: Deploy PyLama Microservices
-  hosts: pylama_servers
+  hosts: devlama_servers
   become: true
   vars:
-    app_user: pylama
-    app_group: pylama
-    base_dir: /opt/pylama
-    config_dir: /etc/pylama
-    log_dir: /var/log/pylama
-    data_dir: /var/lib/pylama
+    app_user: devlama
+    app_group: devlama
+    base_dir: /opt/devlama
+    config_dir: /etc/devlama
+    log_dir: /var/log/devlama
+    data_dir: /var/lib/devlama
     shellama_port: 5000
     apilama_port: 5001
     getllm_port: 5002
@@ -18,8 +18,8 @@
     weblama_port: 3000
     enable_monitoring: true
     enable_ssl: true
-    ssl_cert_path: /etc/ssl/certs/pylama.crt
-    ssl_key_path: /etc/ssl/private/pylama.key
+    ssl_cert_path: /etc/ssl/certs/devlama.crt
+    ssl_key_path: /etc/ssl/private/devlama.key
   
   tasks:
     - name: Update apt cache
@@ -224,16 +224,16 @@
     # Setup Nginx for reverse proxy
     - name: Create Nginx configuration
       template:
-        src: templates/nginx_pylama.conf.j2
-        dest: /etc/nginx/sites-available/pylama.conf
+        src: templates/nginx_devlama.conf.j2
+        dest: /etc/nginx/sites-available/devlama.conf
         owner: root
         group: root
         mode: '0644'
     
     - name: Enable Nginx site
       file:
-        src: /etc/nginx/sites-available/pylama.conf
-        dest: /etc/nginx/sites-enabled/pylama.conf
+        src: /etc/nginx/sites-available/devlama.conf
+        dest: /etc/nginx/sites-enabled/devlama.conf
         state: link
     
     - name: Remove default Nginx site

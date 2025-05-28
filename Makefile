@@ -242,11 +242,11 @@ ansible-test-env-down:
 
 ansible-test-env-run:
 	@echo -e "$(GREEN)Running tests in Ansible testing environment...$(NC)"
-	docker exec -it pylama-ansible-controller ansible-playbook /app/ansible_tests/shellama_test_playbook.yml $(ANSIBLE_OPTS)
+	docker exec -it devlama-ansible-controller ansible-playbook /app/ansible_tests/shellama_test_playbook.yml $(ANSIBLE_OPTS)
 
 ansible-test-env-shell:
 	@echo -e "$(GREEN)Opening shell in Ansible testing environment...$(NC)"
-	docker exec -it pylama-ansible-controller bash
+	docker exec -it devlama-ansible-controller bash
 
 # Clean up
 clean:
@@ -270,7 +270,7 @@ stop:
 	-docker stop $(shell docker ps -q --filter name="py-lama-*") 2>/dev/null || true
 	-docker stop $(shell docker ps -q --filter name="shellama-*") 2>/dev/null || true
 	-docker stop $(shell docker ps -q --filter name="apilama-*") 2>/dev/null || true
-	-docker stop $(shell docker ps -q --filter name="pylama-*") 2>/dev/null || true
+	-docker stop $(shell docker ps -q --filter name="devlama-*") 2>/dev/null || true
 	-docker stop $(shell docker ps -q --filter name="getllm-*") 2>/dev/null || true
 	-docker stop $(shell docker ps -q --filter name="bexy-*") 2>/dev/null || true
 	@echo -e "$(YELLOW)Checking if any processes are still using the ports...$(NC)"

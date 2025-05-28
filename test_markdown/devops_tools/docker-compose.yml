@@ -20,7 +20,7 @@ services:
       - ./data:/app/data
       - ./logs:/app/logs
     networks:
-      - pylama-network
+      - devlama-network
     depends_on:
       - apilama
     healthcheck:
@@ -51,7 +51,7 @@ services:
       - ../apilama/data:/app/data
       - ../apilama/logs:/app/logs
     networks:
-      - pylama-network
+      - devlama-network
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5001/api/health"]
       interval: 30s
@@ -78,7 +78,7 @@ services:
       - ../getllm/logs:/app/logs
       - ../getllm/models:/app/models
     networks:
-      - pylama-network
+      - devlama-network
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5002/api/getllm/health"]
       interval: 30s
@@ -104,7 +104,7 @@ services:
       - ../bexy/data:/app/data
       - ../bexy/logs:/app/logs
     networks:
-      - pylama-network
+      - devlama-network
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5003/api/bexy/health"]
       interval: 30s
@@ -130,7 +130,7 @@ services:
       - ../weblama/public:/app/public
       - ../weblama/markdown:/app/markdown
     networks:
-      - pylama-network
+      - devlama-network
     depends_on:
       - apilama
     healthcheck:
@@ -143,17 +143,17 @@ services:
   # MongoDB for data storage
   mongodb:
     image: mongo:5.0
-    container_name: pylama-mongodb
+    container_name: devlama-mongodb
     restart: unless-stopped
     ports:
       - "27017:27017"
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=pylama
+      - MONGO_INITDB_ROOT_USERNAME=devlama
       - MONGO_INITDB_ROOT_PASSWORD=password
     volumes:
       - mongodb-data:/data/db
     networks:
-      - pylama-network
+      - devlama-network
     healthcheck:
       test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
       interval: 30s
@@ -164,14 +164,14 @@ services:
   # Redis for caching
   redis:
     image: redis:6.2-alpine
-    container_name: pylama-redis
+    container_name: devlama-redis
     restart: unless-stopped
     ports:
       - "6379:6379"
     volumes:
       - redis-data:/data
     networks:
-      - pylama-network
+      - devlama-network
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 30s
@@ -182,7 +182,7 @@ services:
   # Prometheus for monitoring
   prometheus:
     image: prom/prometheus:v2.30.3
-    container_name: pylama-prometheus
+    container_name: devlama-prometheus
     restart: unless-stopped
     ports:
       - "9090:9090"
@@ -190,7 +190,7 @@ services:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus-data:/prometheus
     networks:
-      - pylama-network
+      - devlama-network
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
@@ -200,7 +200,7 @@ services:
   # Grafana for visualization
   grafana:
     image: grafana/grafana:8.2.2
-    container_name: pylama-grafana
+    container_name: devlama-grafana
     restart: unless-stopped
     ports:
       - "3001:3000"
@@ -211,12 +211,12 @@ services:
     volumes:
       - grafana-data:/var/lib/grafana
     networks:
-      - pylama-network
+      - devlama-network
     depends_on:
       - prometheus
 
 networks:
-  pylama-network:
+  devlama-network:
     driver: bridge
 
 volumes:

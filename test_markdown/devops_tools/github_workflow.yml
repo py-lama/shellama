@@ -99,7 +99,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
-          images: ${{ secrets.DOCKER_REGISTRY }}/pylama/shellama
+          images: ${{ secrets.DOCKER_REGISTRY }}/devlama/shellama
           tags: |
             type=semver,pattern={{version}}
             type=ref,event=branch
@@ -112,8 +112,8 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=registry,ref=${{ secrets.DOCKER_REGISTRY }}/pylama/shellama:buildcache
-          cache-to: type=registry,ref=${{ secrets.DOCKER_REGISTRY }}/pylama/shellama:buildcache,mode=max
+          cache-from: type=registry,ref=${{ secrets.DOCKER_REGISTRY }}/devlama/shellama:buildcache
+          cache-to: type=registry,ref=${{ secrets.DOCKER_REGISTRY }}/devlama/shellama:buildcache,mode=max
   
   deploy-staging:
     name: Deploy to Staging
@@ -151,7 +151,7 @@ jobs:
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
     environment:
       name: production
-      url: https://api.pylama.example.com
+      url: https://api.devlama.example.com
     steps:
       - uses: actions/checkout@v3
       

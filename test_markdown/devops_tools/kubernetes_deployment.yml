@@ -4,16 +4,16 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: pylama
+  name: devlama
   labels:
-    name: pylama
+    name: devlama
 
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: shellama-config
-  namespace: pylama
+  namespace: devlama
 data:
   SHELLAMA_PORT: "5000"
   SHELLAMA_HOST: "0.0.0.0"
@@ -25,7 +25,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: apilama-config
-  namespace: pylama
+  namespace: devlama
 data:
   APILAMA_PORT: "5001"
   APILAMA_HOST: "0.0.0.0"
@@ -39,7 +39,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: weblama-config
-  namespace: pylama
+  namespace: devlama
 data:
   WEBLAMA_PORT: "3000"
   WEBLAMA_HOST: "0.0.0.0"
@@ -50,7 +50,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: shellama-deployment
-  namespace: pylama
+  namespace: devlama
   labels:
     app: shellama
 spec:
@@ -70,7 +70,7 @@ spec:
     spec:
       containers:
       - name: shellama
-        image: pylama/shellama:latest
+        image: devlama/shellama:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 5000
@@ -118,7 +118,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: apilama-deployment
-  namespace: pylama
+  namespace: devlama
   labels:
     app: apilama
 spec:
@@ -138,7 +138,7 @@ spec:
     spec:
       containers:
       - name: apilama
-        image: pylama/apilama:latest
+        image: devlama/apilama:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 5001
@@ -186,7 +186,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: weblama-deployment
-  namespace: pylama
+  namespace: devlama
   labels:
     app: weblama
 spec:
@@ -206,7 +206,7 @@ spec:
     spec:
       containers:
       - name: weblama
-        image: pylama/weblama:latest
+        image: devlama/weblama:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 3000
@@ -254,7 +254,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: shellama-service
-  namespace: pylama
+  namespace: devlama
 spec:
   selector:
     app: shellama
@@ -269,7 +269,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: apilama-service
-  namespace: pylama
+  namespace: devlama
 spec:
   selector:
     app: apilama
@@ -284,7 +284,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: weblama-service
-  namespace: pylama
+  namespace: devlama
 spec:
   selector:
     app: weblama
@@ -298,8 +298,8 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: pylama-ingress
-  namespace: pylama
+  name: devlama-ingress
+  namespace: devlama
   annotations:
     kubernetes.io/ingress.class: "nginx"
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
@@ -311,11 +311,11 @@ metadata:
 spec:
   tls:
   - hosts:
-    - api.pylama.example.com
-    - app.pylama.example.com
-    secretName: pylama-tls
+    - api.devlama.example.com
+    - app.devlama.example.com
+    secretName: devlama-tls
   rules:
-  - host: api.pylama.example.com
+  - host: api.devlama.example.com
     http:
       paths:
       - path: /api/shellama
@@ -332,7 +332,7 @@ spec:
             name: apilama-service
             port:
               number: 5001
-  - host: app.pylama.example.com
+  - host: app.devlama.example.com
     http:
       paths:
       - path: /
@@ -348,7 +348,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: shellama-data-pvc
-  namespace: pylama
+  namespace: devlama
 spec:
   accessModes:
     - ReadWriteOnce
@@ -362,7 +362,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: shellama-logs-pvc
-  namespace: pylama
+  namespace: devlama
 spec:
   accessModes:
     - ReadWriteOnce
@@ -376,7 +376,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: apilama-data-pvc
-  namespace: pylama
+  namespace: devlama
 spec:
   accessModes:
     - ReadWriteOnce
@@ -390,7 +390,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: apilama-logs-pvc
-  namespace: pylama
+  namespace: devlama
 spec:
   accessModes:
     - ReadWriteOnce
@@ -404,7 +404,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: weblama-public-pvc
-  namespace: pylama
+  namespace: devlama
 spec:
   accessModes:
     - ReadWriteOnce
@@ -418,7 +418,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: weblama-markdown-pvc
-  namespace: pylama
+  namespace: devlama
 spec:
   accessModes:
     - ReadWriteOnce
@@ -432,7 +432,7 @@ apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: shellama-hpa
-  namespace: pylama
+  namespace: devlama
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
@@ -459,7 +459,7 @@ apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: apilama-hpa
-  namespace: pylama
+  namespace: devlama
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
@@ -486,7 +486,7 @@ apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: weblama-hpa
-  namespace: pylama
+  namespace: devlama
 spec:
   scaleTargetRef:
     apiVersion: apps/v1

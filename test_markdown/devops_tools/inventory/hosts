@@ -13,13 +13,13 @@ getllm-target ansible_host=getllm-target ansible_connection=docker
 [bexy]
 bexy-target ansible_host=bexy-target ansible_connection=docker
 
-[pylama]
-pylama-target ansible_host=pylama-target ansible_connection=docker
+[devlama]
+devlama-target ansible_host=devlama-target ansible_connection=docker
 
 [mock_services:children]
 getllm
 bexy
-pylama
+devlama
 
 [all:vars]
 ansible_python_interpreter=/usr/bin/python3
