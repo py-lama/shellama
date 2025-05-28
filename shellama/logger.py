@@ -4,14 +4,14 @@
 """
 SheLLama Logger
 
-This module provides logging functionality for the SheLLama service using PyLogs.
+This module provides logging functionality for the SheLLama service using LogLama.
 """
 
 import os
 import sys
 from pathlib import Path
 
-# Import PyLogs components
+# Import LogLama components
 from shellama.logging_config import init_logging, get_logger
 
 # Initialize logging
@@ -60,7 +60,7 @@ def init_app(app):
     Args:
         app (Flask): The Flask application to initialize the logger for.
     """
-    # PyLogs is already initialized in the module import
+    # LogLama is already initialized in the module import
     # Just log when the app starts
     logger.info(f"SheLLama API started on {app.config.get('HOST', '127.0.0.1')}:{app.config.get('PORT', 8082)}")
 

@@ -4,6 +4,7 @@ logs
 .db
 .sqlite
 example.png
+TODO.txt
 example.db
 example.txt
 fixed_script.py

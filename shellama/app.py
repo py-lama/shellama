@@ -13,7 +13,7 @@ import sys
 import argparse
 from pathlib import Path
 
-# Import PyLogs components first to ensure environment variables are loaded
+# Import LogLama components first to ensure environment variables are loaded
 from shellama.logging_config import init_logging, get_logger
 
 # Initialize logging before any other imports
