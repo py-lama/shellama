@@ -8,7 +8,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name="shellama",
-    version="0.1.10",
+    version="0.1.12",
     author="Tom Sapletta",
     author_email="info@devlama.dev",
     description="Shell and filesystem operations for the PyLama ecosystem",
