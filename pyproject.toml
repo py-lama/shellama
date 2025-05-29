@@ -6,10 +6,34 @@ build-backend = "poetry.core.masonry.api"
 name = "shellama"
 version = "0.1.13"
 description = "Shell and filesystem operations REST API service for the PyLama ecosystem"
-authors = [ "Tom Sapletta <info@example.com>",]
+authors = ["Tom Sapletta <info@example.com>"]
 license = "Apache-2.0"
 readme = "README.md"
 repository = "https://github.com/py-lama/shellama"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: System Administrators",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: System :: Shells",
+    "Topic :: System :: Systems Administration",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Internet :: WWW/HTTP :: HTTP Servers"
+]
+
+[project.urls]
+Homepage = "https://github.com/py-lama/shellama"
+Documentation = "https://py-lama.github.io/shellama/"
+Repository = "https://github.com/py-lama/shellama"
+Changelog = "https://github.com/py-lama/shellama/blob/main/CHANGELOG.md"
+Tracker = "https://github.com/py-lama/shellama/issues"
+Download = "https://pypi.org/project/shellama/"
 [[tool.poetry.packages]]
 include = "shellama"
 
