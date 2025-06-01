@@ -28,9 +28,7 @@ class SecurityChecker(ast.NodeVisitor):
         if isinstance(node.func, ast.Name):
             # Sprawdź niebezpieczne funkcje
             if node.func.id in config.dangerous_functions:
-                self.warnings.append(
-                    f"Znaleziono wywołanie '{node.func.id}' w linii {node.lineno}"
-                )
+                self.warnings.append(f"Znaleziono wywołanie '{node.func.id}' w linii {node.lineno}")
 
         elif isinstance(node.func, ast.Attribute):
             # Sprawdź wywołania modułów
@@ -40,25 +38,23 @@ class SecurityChecker(ast.NodeVisitor):
 
                 for dangerous_module, dangerous_func in config.dangerous_modules:
                     if module_name == dangerous_module and func_name == dangerous_func:
-                        self.warnings.append(
-                            f"Znaleziono {module_name}.{func_name}() w linii {node.lineno}"
-                        )
+                        self.warnings.append(f"Znaleziono {module_name}.{func_name}() w linii {node.lineno}")
 
         self.generic_visit(node)
 
     def visit_Import(self, node):
         """Sprawdź importy"""
         for alias in node.names:
-            if alias.name in ['os', 'subprocess', 'sys']:
+            if alias.name in ["os", "subprocess", "sys"]:
                 # Można dodać ostrzeżenia o importach systemowych
                 pass
         self.generic_visit(node)
 
     def visit_ImportFrom(self, node):
         """Sprawdź importy from"""
-        if node.module in ['os', 'subprocess', 'sys']:
+        if node.module in ["os", "subprocess", "sys"]:
             for alias in node.names:
-                if alias.name in ['system', 'call', 'run', 'Popen']:
+                if alias.name in ["system", "call", "run", "Popen"]:
                     self.warnings.append(
                         f"Import niebezpiecznej funkcji '{alias.name}' z modułu '{node.module}' w linii {node.lineno}"
                     )
@@ -95,19 +91,15 @@ def check_code_quality(content: str) -> List[str]:
     """Sprawdź jakość kodu"""
     warnings = []
 
-    lines = content.split('\n')
+    lines = content.split("\n")
     for i, line in enumerate(lines, 1):
         # Sprawdź długość linii
         if len(line) > config.max_line_length:
-            warnings.append(
-                f"Linia {i} przekracza maksymalną długość ({len(line)} > {config.max_line_length} znaków)"
-            )
+            warnings.append(f"Linia {i} przekracza maksymalną długość ({len(line)} > {config.max_line_length} znaków)")
 
         # Sprawdź tabulatory vs spacje (PEP 8)
-        if '\t' in line and '    ' in line:
-            warnings.append(
-                f"Linia {i} miesza tabulatory i spacje"
-            )
+        if "\t" in line and "    " in line:
+            warnings.append(f"Linia {i} miesza tabulatory i spacje")
 
     return warnings
 
@@ -128,12 +120,12 @@ def validate_python_file(file_path: str) -> ValidationResult:
 
     # Odczytaj plik
     try:
-        with open(file_path, 'r', encoding=config.encoding) as f:
+        with open(file_path, "r", encoding=config.encoding) as f:
             content = f.read()
     except UnicodeDecodeError:
         try:
             # Spróbuj inne kodowanie
-            with open(file_path, 'r', encoding='latin-1') as f:
+            with open(file_path, "r", encoding="latin-1") as f:
                 content = f.read()
         except Exception as e:
             return ValidationResult(False, f"Błąd odczytu pliku: {e}")
@@ -167,12 +159,8 @@ def validate_python_file(file_path: str) -> ValidationResult:
 
         print()
         response = input("Czy kontynuować mimo ostrzeżeń? (t/n): ").lower()
-        if response not in ['t', 'tak', 'y', 'yes']:
-            return ValidationResult(
-                False,
-                "Wykonanie przerwane przez użytkownika z powodu ostrzeżeń",
-                all_warnings
-            )
+        if response not in ["t", "tak", "y", "yes"]:
+            return ValidationResult(False, "Wykonanie przerwane przez użytkownika z powodu ostrzeżeń", all_warnings)
 
     return ValidationResult(True, "Plik jest poprawny", all_warnings)
 
@@ -188,14 +176,14 @@ def is_python_file(file_path: str) -> bool:
         bool: True jeśli to plik Python
     """
     # Sprawdź rozszerzenie
-    if file_path.endswith('.py'):
+    if file_path.endswith(".py"):
         return True
 
     # Sprawdź shebang i zawartość
     try:
-        with open(file_path, 'r', encoding=config.encoding) as f:
+        with open(file_path, "r", encoding=config.encoding) as f:
             first_line = f.readline().strip()
-            if first_line.startswith('#!') and 'python' in first_line:
+            if first_line.startswith("#!") and "python" in first_line:
                 return True
 
             # Spróbuj sparsować jako Python

@@ -1,7 +1,7 @@
 """
 Spylog - Python Validator Proxy
 
-Waliduje pliki Python przed uruchomieniem i przekazuje wykonanie 
+Waliduje pliki Python przed uruchomieniem i przekazuje wykonanie
 do oryginalnego interpretera Python.
 """
 
@@ -14,4 +14,4 @@ from .main import main
 from .validator import validate_python_file
 from .config import SpylogConfig
 
-__all__ = ['main', 'validate_python_file', 'SpylogConfig']
+__all__ = ["main", "validate_python_file", "SpylogConfig"]

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Główny moduł Spyq - Python Validator Proxy
+Główny moduł Spylog - Python Validator Proxy
 """
 
 import sys
@@ -24,11 +24,11 @@ def find_python_file_in_args(args: List[str]) -> Optional[str]:
     """
     for arg in args:
         # Pomijaj flagi (zaczynające się od -)
-        if arg.startswith('-'):
+        if arg.startswith("-"):
             continue
 
         # Sprawdź czy to plik Python
-        if os.path.isfile(arg) and (arg.endswith('.py') or is_python_file(arg)):
+        if os.path.isfile(arg) and (arg.endswith(".py") or is_python_file(arg)):
             return arg
 
     return None
@@ -48,7 +48,7 @@ def should_validate(args: List[str]) -> bool:
         return False
 
     # Pomijaj niektóre flagi które nie wymagają walidacji
-    skip_flags = ['-c', '--command', '-m', '--module', '-h', '--help', '-V', '--version']
+    skip_flags = ["-c", "--command", "-m", "--module", "-h", "--help", "-V", "--version"]
 
     for flag in skip_flags:
         if flag in args:
@@ -70,12 +70,7 @@ def execute_python(args: List[str]) -> int:
     original_python = config.original_python
 
     try:
-        result = subprocess.run(
-            [original_python] + args,
-            stdout=sys.stdout,
-            stderr=sys.stderr,
-            stdin=sys.stdin
-        )
+        result = subprocess.run([original_python] + args, stdout=sys.stdout, stderr=sys.stderr, stdin=sys.stdin)
         return result.returncode
     except KeyboardInterrupt:
         return 130  # Standardowy kod dla Ctrl+C
@@ -85,8 +80,8 @@ def execute_python(args: List[str]) -> int:
 
 
 def print_banner():
-    """Wyświetl banner Spyq"""
-    print("🔍 Spyq Python Validator")
+    """Wyświetl banner Spylog"""
+    print("🔍 Spylog Python Validator")
 
 
 def print_validation_result(python_file: str, result):
@@ -107,7 +102,7 @@ def print_validation_result(python_file: str, result):
 
 
 def main():
-    """Główna funkcja spyq"""
+    """Główna funkcja spylog"""
     args = sys.argv[1:]
 
     # Sprawdź czy potrzebujemy walidacji
@@ -151,5 +146,5 @@ def cli():
         sys.exit(1)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     cli()
