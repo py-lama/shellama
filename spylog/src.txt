@@ -1,0 +1,25 @@
+spylog/
+├── spylog/                           # Główny pakiet
+│   ├── __init__.py                 # Inicjalizacja pakietu
+│   ├── main.py                     # Główna logika proxy
+│   ├── validator.py                # Moduł walidacji
+│   └── config.py                   # Konfiguracja
+├── tests/                          # Testy
+│   ├── __init__.py
+│   ├── test_validator.py
+│   ├── test_main.py
+│   └── fixtures/                   # Pliki testowe
+│       ├── valid_script.py
+│       ├── invalid_syntax.py
+│       └── security_warning.py
+├── setup.py                        # Klasyczny setup
+├── setup.cfg                       # Konfiguracja setuptools
+├── pyproject.toml                  # Nowoczesny standard
+├── requirements.txt                # Zależności produkcyjne (puste)
+├── requirements-dev.txt            # Zależności deweloperskie
+├── README.md                       # Dokumentacja
+├── LICENSE                         # Licencja MIT
+├── MANIFEST.in                     # Pliki do dołączenia
+├── .gitignore                      # Git ignore
+├── install.sh                      # Skrypt instalacyjny z aliasem
+└── Makefile                        # Automatyzacja zadań
